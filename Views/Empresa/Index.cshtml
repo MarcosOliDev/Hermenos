@@ -1,0 +1,71 @@
+﻿@model IReadOnlyList<EmpresaLinhaViewModel>
+@{
+	ViewData["Title"] = "Empresas";
+	ViewData["Section"] = "Empresas";
+	var busca = (string?)ViewBag.Busca;
+	var situacao = (string?)ViewBag.Situacao;
+}
+
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">CARTEIRA DE CLIENTES</span>
+		<h1>Empresas</h1>
+		<p>Consulte a situação fiscal e acesse os documentos de cada empresa.</p>
+	</div>
+	<span class="result-count"><strong>@Model.Count</strong> @(Model.Count == 1 ? "empresa encontrada" : "empresas encontradas")</span>
+</div>
+
+<section class="surface">
+	<form method="get" class="filter-panel filter-panel-wide" data-loading-form>
+		<div class="filter-field filter-search">
+			<label for="empresa-busca">Buscar por nome ou CNPJ</label>
+			<div class="input-with-icon">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.3 21.7-5.4-5.4a8 8 0 1 1 1.4-1.4l5.4 5.4-1.4 1.4ZM4 10a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z" /></svg>
+				<input class="form-control" id="empresa-busca" name="busca" value="@busca" placeholder="Ex.: Supermercado Alfa ou 12.345..." />
+			</div>
+		</div>
+		<div class="filter-field">
+			<label for="empresa-situacao">Situação</label>
+			<select class="form-select" id="empresa-situacao" name="situacao">
+				<option value="">Todas as situações</option>
+				<option value="Com pendências" selected="@(situacao == "Com pendências")">Com pendências</option>
+				<option value="Em dia" selected="@(situacao == "Em dia")">Em dia</option>
+			</select>
+		</div>
+		<button class="btn btn-primary" type="submit" data-loading-label="Buscando...">Buscar</button>
+		@if (!string.IsNullOrWhiteSpace(busca) || !string.IsNullOrWhiteSpace(situacao))
+		{
+			<a class="btn btn-outline-secondary" asp-action="Index">Limpar</a>
+		}
+	</form>
+
+	<div class="table-responsive">
+		<table class="table data-table align-middle mb-0">
+			<caption class="visually-hidden">Empresas encontradas</caption>
+			<thead><tr><th scope="col">Empresa</th><th scope="col">Documentos</th><th scope="col">Divergências</th><th scope="col">Falhas</th><th scope="col">Última importação</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
+			<tbody>
+				@foreach (var empresa in Model)
+				{
+					<tr>
+						<td><a class="primary-cell" asp-action="Detalhes" asp-route-id="@empresa.Id">@empresa.Nome</a><small>CNPJ @empresa.Cnpj</small></td>
+						<td><span class="number-cell">@empresa.Documentos</span></td>
+						<td><span class="number-cell @(empresa.Pendencias > 0 ? "text-warning-emphasis" : "")">@empresa.Pendencias</span></td>
+						<td><span class="number-cell @(empresa.Falhas > 0 ? "text-danger" : "")">@empresa.Falhas</span></td>
+						<td>@(empresa.UltimaImportacao?.ToString("dd/MM/yyyy") ?? "Sem importação")</td>
+						<td><span class="status-badge @(empresa.Situacao == "Em dia" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@empresa.Situacao</span></td>
+						<td class="text-end"><a class="icon-link" asp-action="Detalhes" asp-route-id="@empresa.Id">Ver detalhes <span aria-hidden="true">→</span></a></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	@if (Model.Count == 0)
+	{
+		<div class="empty-state">
+			<span class="empty-icon" aria-hidden="true">⌕</span>
+			<h3>Nenhuma empresa encontrada</h3>
+			<p>Não há empresas que correspondam aos critérios informados.</p>
+			<a class="btn btn-outline-primary btn-sm" asp-action="Index">Limpar filtros</a>
+		</div>
+	}
+</section>

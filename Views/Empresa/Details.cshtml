@@ -1,0 +1,113 @@
+﻿@model EmpresaDetalhesViewModel
+@{
+	ViewData["Title"] = Model.Empresa.Nome;
+	ViewData["Section"] = "Empresas / Detalhes";
+	var competenciaPartes = Model.Competencia.Split('-');
+	var competencia = competenciaPartes.Length == 2 ? $"{competenciaPartes[1]}/{competenciaPartes[0]}" : Model.Competencia;
+	ViewData["Competencia"] = competencia;
+	var temPendencias = Model.Pendentes + Model.EmAnalise > 0;
+}
+
+<a class="back-link" asp-action="Index"><span aria-hidden="true">←</span> Voltar para empresas</a>
+
+<div class="company-hero">
+	<div class="company-identity">
+		<span class="company-monogram" aria-hidden="true">@Model.Empresa.Nome.Substring(0, 1)</span>
+		<div>
+			<span class="eyebrow">EMPRESA CLIENTE</span>
+			<h1>@Model.Empresa.Nome</h1>
+			<p>CNPJ @Model.Empresa.Cnpj · Cadastro @Model.Empresa.Situacao.ToLowerInvariant()</p>
+		</div>
+	</div>
+	<div class="company-hero-actions">
+		<span class="status-badge @(temPendencias ? "status-warning" : "status-success")"><span aria-hidden="true"></span>@(temPendencias ? "Com pendências" : "Em dia")</span>
+		<a class="btn btn-primary" asp-controller="Conciliacao" asp-action="Index" asp-route-empresaId="@Model.Empresa.Id">Abrir conciliação</a>
+	</div>
+</div>
+
+<div class="info-banner" role="status">
+	<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 10h2v7h-2v-7Zm0-3h2v2h-2V7Zm1-5a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z" /></svg>
+	<div><strong>Dados demonstrativos</strong><span>Competência @competencia · Atualizado em @Model.AtualizadoEm.ToString("dd/MM/yyyy 'às' HH:mm")</span></div>
+</div>
+
+<section class="metric-grid detail-metric-grid" aria-label="Indicadores da empresa">
+	<article class="metric-card"><span class="metric-label">Documentos identificados</span><strong>@Model.Documentos.Count</strong><small>Na competência atual</small></article>
+	<article class="metric-card"><span class="metric-label">Sem divergências</span><strong>@Model.SemDivergencias</strong><small>Documentos conciliados</small></article>
+	<article class="metric-card"><span class="metric-label">Pendentes</span><strong>@Model.Pendentes</strong><small>Aguardando análise</small></article>
+	<article class="metric-card"><span class="metric-label">Em análise</span><strong>@Model.EmAnalise</strong><small>Com responsável</small></article>
+	<article class="metric-card"><span class="metric-label">Falhas de importação</span><strong>@Model.Falhas</strong><small>Processamentos com falha</small></article>
+	<article class="metric-card"><span class="metric-label">Lotes recebidos</span><strong>@Model.Lotes.Count</strong><small>Arquivos registrados</small></article>
+</section>
+
+<section class="surface">
+	<ul class="nav detail-tabs" id="empresaTabs" role="tablist">
+		<li class="nav-item" role="presentation"><button class="nav-link active" id="visao-tab" data-bs-toggle="tab" data-bs-target="#visao-pane" type="button" role="tab" aria-controls="visao-pane" aria-selected="true">Visão geral</button></li>
+		<li class="nav-item" role="presentation"><button class="nav-link" id="documentos-tab" data-bs-toggle="tab" data-bs-target="#documentos-pane" type="button" role="tab" aria-controls="documentos-pane" aria-selected="false">Documentos <span>@Model.Documentos.Count</span></button></li>
+		<li class="nav-item" role="presentation"><button class="nav-link" id="divergencias-tab" data-bs-toggle="tab" data-bs-target="#divergencias-pane" type="button" role="tab" aria-controls="divergencias-pane" aria-selected="false">Divergências <span>@Model.Divergencias.Count</span></button></li>
+		<li class="nav-item" role="presentation"><button class="nav-link" id="importacoes-tab" data-bs-toggle="tab" data-bs-target="#importacoes-pane" type="button" role="tab" aria-controls="importacoes-pane" aria-selected="false">Importações <span>@Model.Lotes.Count</span></button></li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="visao-pane" role="tabpanel" aria-labelledby="visao-tab" tabindex="0">
+			<div class="overview-grid">
+				<div class="overview-card">
+					<h2>Resumo da competência</h2>
+					<p>Visão operacional dos dados recebidos e comparados.</p>
+					<dl class="summary-list">
+						<div><dt>Competência fiscal</dt><dd>@competencia</dd></div>
+						<div><dt>Status cadastral</dt><dd><span class="status-badge status-success"><span aria-hidden="true"></span>@Model.Empresa.Situacao</span></dd></div>
+						<div><dt>Última atualização</dt><dd>@Model.AtualizadoEm.ToString("dd/MM/yyyy HH:mm")</dd></div>
+					</dl>
+				</div>
+				<div class="overview-card">
+					<h2>Próximos pontos de atenção</h2>
+					<p>Indicadores calculados a partir dos dados atuais.</p>
+					<div class="attention-list">
+						<div><span class="attention-icon amber" aria-hidden="true">!</span><span><strong>@Model.Pendentes pendência(s)</strong><small>Aguardando início da análise</small></span></div>
+						<div><span class="attention-icon blue" aria-hidden="true">i</span><span><strong>@Model.EmAnalise em análise</strong><small>Ocorrências com acompanhamento</small></span></div>
+						<div><span class="attention-icon red" aria-hidden="true">×</span><span><strong>@Model.Falhas falha(s)</strong><small>Lotes que exigem revisão</small></span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="documentos-pane" role="tabpanel" aria-labelledby="documentos-tab" tabindex="0">
+			<div class="tab-pane-heading"><div><h2>Documentos identificados</h2><p>Valores recebidos das fontes XML e ERP.</p></div><a class="btn btn-outline-primary btn-sm" asp-controller="Conciliacao" asp-action="Index" asp-route-empresaId="@Model.Empresa.Id">Ver na conciliação</a></div>
+			<div class="table-responsive">
+				<table class="table data-table align-middle mb-0">
+					<thead><tr><th scope="col">Documento</th><th scope="col">Tipo / fornecedor</th><th scope="col">Emissão</th><th scope="col">Valor XML</th><th scope="col">Valor ERP</th><th scope="col">Resultado</th></tr></thead>
+					<tbody>
+						@foreach (var documento in Model.Documentos)
+						{
+							<tr><td><strong>@documento.Numero</strong><small>@(documento.Chave == "Não aplicável" ? "Sem chave de acesso" : documento.Chave)</small></td><td>@documento.Tipo<small>@documento.Fornecedor</small></td><td>@documento.Emissao.ToString("dd/MM/yyyy")</td><td>@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td>@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td><span class="status-badge @(documento.Situacao == "Conciliado" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@documento.Situacao</span></td></tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="divergencias-pane" role="tabpanel" aria-labelledby="divergencias-tab" tabindex="0">
+			<div class="tab-pane-heading"><div><h2>Divergências da empresa</h2><p>Ocorrências identificadas na competência.</p></div><a class="btn btn-outline-primary btn-sm" asp-controller="Conciliacao" asp-action="Divergencias" asp-route-empresaId="@Model.Empresa.Id">Abrir listagem</a></div>
+			<div class="activity-list">
+				@foreach (var divergencia in Model.Divergencias)
+				{
+					<div class="activity-item static"><span class="activity-mark" aria-hidden="true"></span><span class="activity-copy"><strong>@divergencia.Categoria</strong><small>Documento @Model.ObterDocumento(divergencia.IdDocumento)?.Numero · @divergencia.Campo</small></span><span class="status-badge @(divergencia.Situacao == "Em análise" ? "status-info" : divergencia.Situacao == "Pendente" ? "status-warning" : "status-success")"><span aria-hidden="true"></span>@divergencia.Situacao</span></div>
+				}
+				@if (Model.Divergencias.Count == 0)
+				{
+					<div class="empty-state"><h3>Nenhuma divergência identificada</h3><p>Não há ocorrências registradas para esta empresa.</p></div>
+				}
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="importacoes-pane" role="tabpanel" aria-labelledby="importacoes-tab" tabindex="0">
+			<div class="tab-pane-heading"><div><h2>Histórico de importações</h2><p>Arquivos recebidos e resultados do processamento.</p></div><a class="btn btn-outline-primary btn-sm" asp-controller="Conciliacao" asp-action="Importacoes" asp-route-empresaId="@Model.Empresa.Id">Ver todos os lotes</a></div>
+			<div class="activity-list">
+				@foreach (var lote in Model.Lotes)
+				{
+					<div class="activity-item static"><span class="file-type">@lote.Formato</span><span class="activity-copy"><strong>@lote.Arquivo</strong><small>@lote.Origem · @lote.Recebido.ToString("dd/MM/yyyy HH:mm") · recebido por @lote.Usuario</small></span><span class="status-badge @(lote.Situacao == "Concluído" ? "status-success" : lote.Situacao.Contains("Falha") ? "status-danger" : "status-warning")"><span aria-hidden="true"></span>@lote.Situacao</span></div>
+				}
+			</div>
+		</div>
+	</div>
+</section>

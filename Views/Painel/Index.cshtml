@@ -1,0 +1,219 @@
+@model Hermenos.ViewModels.Painel.PainelGeralViewModel
+@{
+	ViewData["Title"] = "Painel geral";
+	ViewData["Section"] = "Painel geral";
+	var competenciaPartes = Model.Competencia.Split('-');
+	var competencia = competenciaPartes.Length == 2 ? $"{competenciaPartes[1]}/{competenciaPartes[0]}" : Model.Competencia;
+	ViewData["Competencia"] = competencia;
+	var maiorVolumeEmpresa = Model.Empresas.Count == 0 ? 1 : Math.Max(1, Math.Max(Model.Empresas.Max(e => e.Documentos), Model.Empresas.Max(e => e.Pendencias)));
+	var documentosComDivergencia = Math.Max(0, Model.DocumentosIdentificados - Model.DocumentosSemDivergencias);
+	var maiorValorComparavel = Math.Max(Model.ValorXmlComparavel, Model.ValorErpComparavel);
+	var percentualXml = maiorValorComparavel == 0 ? 0 : (int)Math.Round(Model.ValorXmlComparavel / maiorValorComparavel * 100);
+	var percentualErp = maiorValorComparavel == 0 ? 0 : (int)Math.Round(Model.ValorErpComparavel / maiorValorComparavel * 100);
+	var culturaMoeda = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+	var valorXmlFormatado = Model.ValorXmlComparavel.ToString("C2", culturaMoeda);
+	var valorErpFormatado = Model.ValorErpComparavel.ToString("C2", culturaMoeda);
+}
+
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">VISÃO CONSOLIDADA</span>
+		<h1>Painel geral</h1>
+		<p>Acompanhe a saúde fiscal da carteira e priorize o que precisa de atenção.</p>
+	</div>
+	<a class="btn btn-primary" asp-controller="Empresas" asp-action="Index">
+		Ver todas as empresas
+		<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 4 6 6-6 6-1.4-1.4 4.6-4.6-4.6-4.6L8 4Z" /></svg>
+	</a>
+</div>
+
+<div class="context-bar">
+	<div class="context-copy">
+		<span class="live-indicator" aria-hidden="true"></span>
+		<span>Dados consolidados da competência <strong>@competencia</strong></span>
+	</div>
+	<span class="updated-at">Atualizado em @Model.AtualizadoEm.ToString("dd/MM/yyyy 'às' HH:mm")</span>
+</div>
+
+<section class="metric-grid" aria-label="Indicadores principais">
+	<a class="metric-card" asp-controller="Empresas" asp-action="Index">
+		<span class="metric-icon blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V3h10v4h6v14H4Zm3-3h2v-2H7v2Zm0-5h2v-2H7v2Zm0-5h2V6H7v2Zm5 10h2v-2h-2v2Zm0-5h2v-2h-2v2Zm0-5h2V6h-2v2Zm5 10h1v-7h-1v7Z" /></svg></span>
+		<span class="metric-label">Empresas cadastradas</span>
+		<strong data-contador="@Model.EmpresasCadastradas">@Model.EmpresasCadastradas</strong>
+		<small>Carteira ativa do escritório</small>
+	</a>
+	<a class="metric-card" asp-controller="Conciliacao" asp-action="Index">
+		<span class="metric-icon blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2Zm2 2v16h10V8h-4V4H8Zm2 8h6v2h-6v-2Zm0 4h6v2h-6v-2Z" /></svg></span>
+		<span class="metric-label">Documentos identificados</span>
+		<strong data-contador="@Model.DocumentosIdentificados">@Model.DocumentosIdentificados</strong>
+		<small>Documentos únicos encontrados</small>
+	</a>
+	<a class="metric-card metric-card-progress" asp-controller="Conciliacao" asp-action="Index" asp-route-situacao="Conciliado">
+		<span class="metric-content">
+			<span class="metric-label">Sem divergências</span>
+			<strong data-contador="@Model.DocumentosSemDivergencias">@Model.DocumentosSemDivergencias</strong>
+			<small>Do total identificado</small>
+		</span>
+		<svg class="progress-ring" viewBox="0 0 58 58" data-progresso="@Model.PercentualSemDivergencias" role="img" aria-label="@Model.PercentualSemDivergencias% dos documentos sem divergências">
+			<circle class="progress-ring-track" cx="29" cy="29" r="23" />
+			<circle class="progress-ring-value" cx="29" cy="29" r="23" />
+			<text x="29" y="32" text-anchor="middle">@Model.PercentualSemDivergencias%</text>
+		</svg>
+	</a>
+	<a class="metric-card" asp-controller="Conciliacao" asp-action="Divergencias">
+		<span class="metric-icon red"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v6h-2V7Zm0 8h2v2h-2v-2Zm1-13 10 19H2L12 2Zm0 4.2L5.3 19h13.4L12 6.2Z" /></svg></span>
+		<span class="metric-label">Divergências pendentes</span>
+		<strong data-contador="@Model.DivergenciasPendentes">@Model.DivergenciasPendentes</strong>
+		<small>Pendentes ou em análise</small>
+	</a>
+</section>
+
+<div class="dashboard-grid">
+	<section class="surface mb-0">
+		<div class="surface-heading">
+			<div><h2>Análise da carteira</h2><p>Indicadores relevantes para priorizar o trabalho fiscal.</p></div>
+			<a class="link-action" asp-controller="Conciliacao" asp-action="Divergencias">Ver divergências <span aria-hidden="true">→</span></a>
+		</div>
+		<div class="dashboard-chart-tabs nav nav-pills" role="tablist" aria-label="Gráficos principais">
+	<button class="nav-link active" id="tab-divergencias" data-bs-toggle="pill" data-bs-target="#grafico-divergencias" type="button" role="tab" aria-controls="grafico-divergencias" aria-selected="true">Divergências por categoria</button>
+	<button class="nav-link" id="tab-conciliacao" data-bs-toggle="pill" data-bs-target="#grafico-conciliacao" type="button" role="tab" aria-controls="grafico-conciliacao" aria-selected="false">Situação da conciliação</button>
+	<button class="nav-link" id="tab-empresas" data-bs-toggle="pill" data-bs-target="#grafico-empresas" type="button" role="tab" aria-controls="grafico-empresas" aria-selected="false">Documentos por empresa</button>
+		<button class="nav-link" id="tab-apuracao" data-bs-toggle="pill" data-bs-target="#grafico-apuracao" type="button" role="tab" aria-controls="grafico-apuracao" aria-selected="false">Apuração XML × ERP</button>
+</div>
+<div class="tab-content dashboard-chart-content">
+	<div class="tab-pane fade show active" id="grafico-divergencias" role="tabpanel" aria-labelledby="tab-divergencias" tabindex="0">
+		<div class="chart-list">
+			@foreach (var categoria in Model.Categorias)
+			{
+				var percentual = Math.Max(8, categoria.Quantidade * 100 / Model.MaiorCategoria);
+				<div class="chart-item">
+					<div><span>@categoria.Nome</span><strong>@categoria.Quantidade</strong></div>
+					<div class="bar-track" role="img" aria-label="@categoria.Nome: @categoria.Quantidade ocorrência(s)">
+						<div class="bar @categoria.Classe" data-barra="@percentual"></div>
+					</div>
+				</div>
+			}
+			@if (Model.Categorias.All(c => c.Quantidade == 0))
+			{
+				<div class="chart-empty">Não há divergências nos filtros selecionados.</div>
+			}
+		</div>
+	</div>
+	<div class="tab-pane fade" id="grafico-conciliacao" role="tabpanel" aria-labelledby="tab-conciliacao" tabindex="0">
+		<div class="reconciliation-chart">
+			<div class="reconciliation-donut" role="img" aria-label="@Model.PercentualSemDivergencias% dos documentos conciliados sem divergência" style="--percentual-conciliado: @Model.PercentualSemDivergencias%;">
+				<div><strong>@Model.PercentualSemDivergencias%</strong><span>sem divergência</span></div>
+			</div>
+			<div class="reconciliation-legend">
+				<div><span class="legend-swatch legend-ok"></span><span>Sem divergência</span><strong>@Model.DocumentosSemDivergencias</strong></div>
+				<div><span class="legend-swatch legend-attention"></span><span>Com divergência ou pendência</span><strong>@documentosComDivergencia</strong></div>
+				<small>Base: @Model.DocumentosIdentificados documentos identificados</small>
+			</div>
+		</div>
+	</div>
+	<div class="tab-pane fade" id="grafico-empresas" role="tabpanel" aria-labelledby="tab-empresas" tabindex="0">
+		<div class="company-chart-list">
+			@foreach (var empresa in Model.Empresas.OrderByDescending(e => e.Pendencias).ThenByDescending(e => e.Documentos).Take(3))
+			{
+				var documentosPercentual = (int)Math.Round((double)empresa.Documentos / maiorVolumeEmpresa * 100);
+				var pendenciasPercentual = (int)Math.Round((double)empresa.Pendencias / maiorVolumeEmpresa * 100);
+				<div class="company-chart-item">
+					<div class="company-chart-title"><strong>@empresa.Nome</strong><span>@empresa.Documentos documentos</span></div>
+					<div class="company-chart-track" role="img" aria-label="@empresa.Nome: @empresa.Documentos documentos">
+						<div class="bar company-documents-bar" data-barra="@documentosPercentual"></div>
+					</div>
+					<div class="company-chart-subtitle"><span>Pendências</span><strong>@empresa.Pendencias</strong></div>
+					<div class="company-chart-track company-pending-track" role="img" aria-label="@empresa.Nome: @empresa.Pendencias pendência(s)">
+						<div class="bar company-pending-bar" data-barra="@pendenciasPercentual"></div>
+					</div>
+				</div>
+			}
+			@if (Model.Empresas.Count == 0)
+			{
+				<div class="chart-empty">Nenhuma empresa corresponde aos filtros selecionados.</div>
+			}
+		</div>
+	</div>
+	<div class="tab-pane fade" id="grafico-apuracao" role="tabpanel" aria-labelledby="tab-apuracao" tabindex="0">
+		<div class="financial-comparison-chart">
+			<div class="financial-comparison-row">
+				<div class="financial-comparison-label"><strong>XML</strong><span>@valorXmlFormatado</span></div>
+				<div class="financial-comparison-track" role="img" aria-label="Total XML comparável: @valorXmlFormatado">
+					<div class="bar financial-xml-bar" data-barra="@percentualXml"></div>
+				</div>
+			</div>
+			<div class="financial-comparison-row">
+				<div class="financial-comparison-label"><strong>ERP</strong><span>@valorErpFormatado</span></div>
+				<div class="financial-comparison-track" role="img" aria-label="Total ERP comparável: @valorErpFormatado">
+					<div class="bar financial-erp-bar" data-barra="@percentualErp"></div>
+				</div>
+			</div>
+			<div class="financial-comparison-summary">
+				<div><span>Diferença absoluta somada</span><strong>@Model.DiferencaAbsolutaComparavel.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+				<div><span>Documentos com valores nas duas fontes</span><strong>@Model.DocumentosComValoresComparaveis</strong></div>
+			</div>
+			<p class="chart-footnote">A comparação considera somente documentos com valores informados no XML e no ERP. Não representa cálculo de tributos.</p>
+		</div>
+	</div></div>
+</section>
+
+	<section class="surface mb-0">
+		<div class="surface-heading">
+			<div><h2>Pendências recentes</h2><p>Itens que merecem acompanhamento.</p></div>
+			<a class="link-action" asp-controller="Conciliacao" asp-action="Divergencias">Ver todas <span aria-hidden="true">→</span></a>
+		</div>
+		<div class="activity-list">
+			@foreach (var divergencia in Model.PendenciasRecentes.Take(3))
+			{
+				<a class="activity-item" asp-controller="Conciliacao" asp-action="Divergencias" asp-route-empresaId="@divergencia.EmpresaId">
+					<span class="activity-mark" aria-hidden="true"></span>
+					<span class="activity-copy"><strong>@divergencia.Empresa</strong><small>Doc. @divergencia.Documento · @divergencia.Categoria</small></span>
+					<span class="status-badge @(divergencia.Situacao == "Em análise" ? "status-info" : "status-warning")"><span aria-hidden="true"></span>@divergencia.Situacao</span>
+				</a>
+			}
+			@if (Model.PendenciasRecentes.Count == 0)
+			{
+				<div class="empty-state compact"><h3>Nenhuma pendência recente</h3><p>Não há itens para os filtros selecionados.</p></div>
+			}
+		</div>
+	</section>
+</div>
+
+
+<section class="surface">
+	<div class="surface-heading">
+		<div>
+			<h2>Empresas em destaque</h2>
+			<p>Documentos e pendências mais importantes na competência selecionada.</p>
+		</div>
+		<a class="link-action" asp-controller="Empresas" asp-action="Index">Ver carteira completa <span aria-hidden="true">→</span></a>
+	</div>
+	<div class="table-responsive">
+		<table class="table data-table dashboard-company-table align-middle mb-0">
+			<caption class="visually-hidden">Situação das empresas na competência @competencia</caption>
+			<thead><tr><th scope="col">Empresa</th><th scope="col">Documentos</th><th scope="col">Pendências</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
+			<tbody>
+				@foreach (var empresa in Model.Empresas.OrderByDescending(e => e.Pendencias).ThenByDescending(e => e.Documentos).Take(3))
+				{
+					<tr>
+						<td><a class="primary-cell" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id">@empresa.Nome</a><small>@empresa.Cnpj</small></td>
+						<td><span class="number-cell">@empresa.Documentos</span></td>
+						<td><span class="number-cell @(empresa.Pendencias > 0 ? "text-warning-emphasis" : "")">@empresa.Pendencias</span></td>
+						<td><span class="status-badge @(empresa.Situacao == "Em dia" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@empresa.Situacao</span></td>
+						<td class="text-end"><a class="icon-link" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id" aria-label="Abrir detalhes de @empresa.Nome">Abrir <span aria-hidden="true">→</span></a></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	@if (Model.Empresas.Count == 0)
+	{
+		<div class="empty-state">
+			<span class="empty-icon" aria-hidden="true">⌕</span>
+			<h3>Nenhuma empresa encontrada</h3>
+			<p>Revise os filtros para consultar outros resultados.</p>
+			<a class="btn btn-outline-primary btn-sm" asp-action="Index">Limpar filtros</a>
+		</div>
+	}
+</section>
+

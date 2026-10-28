@@ -1,0 +1,97 @@
+﻿@model IReadOnlyList<DocumentoFiscalDTO>
+@{
+	ViewData["Title"] = "Conciliação";
+	ViewData["Section"] = "Conciliação";
+	var busca = (string?)ViewBag.Busca;
+	var situacao = (string?)ViewBag.Situacao;
+	int? empresaId = ViewBag.EmpresaId;
+	var conciliados = Model.Count(x => x.Situacao == "Conciliado");
+	var divergentes = Model.Count - conciliados;
+	var totalXml = Model.Sum(x => x.ValorXml ?? 0);
+	var totalErp = Model.Sum(x => x.ValorErp ?? 0);
+}
+
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">COMPARAÇÃO FISCAL</span>
+		<h1>Conciliação de documentos</h1>
+		<p>@(ViewBag.NomeEmpresa ?? "Documentos de todas as empresas") · compare os dados recebidos do XML e do ERP.</p>
+	</div>
+	<span class="demo-label">PROCESSAMENTO DEMONSTRATIVO</span>
+</div>
+
+<section class="summary-strip" aria-label="Resumo dos resultados">
+	<div><span>Documentos exibidos</span><strong>@Model.Count</strong></div>
+	<div><span>Conciliados</span><strong class="success-text">@conciliados</strong></div>
+	<div><span>Com divergência</span><strong class="warning-text">@divergentes</strong></div>
+	<div><span>Total XML</span><strong>@totalXml.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+	<div><span>Total ERP</span><strong>@totalErp.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</strong></div>
+</section>
+
+<section class="surface">
+	<form method="get" class="filter-panel filter-panel-wide" data-loading-form>
+		@if (empresaId.HasValue)
+		{
+			<input type="hidden" name="empresaId" value="@empresaId" />
+		}
+		<div class="filter-field filter-search">
+			<label for="conciliacao-busca">Documento, chave ou fornecedor</label>
+			<div class="input-with-icon">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.3 21.7-5.4-5.4a8 8 0 1 1 1.4-1.4l5.4 5.4-1.4 1.4ZM4 10a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z" /></svg>
+				<input class="form-control" id="conciliacao-busca" name="busca" value="@busca" placeholder="Pesquisar documento" />
+			</div>
+		</div>
+		<div class="filter-field">
+			<label for="conciliacao-situacao">Situação</label>
+			<select class="form-select" id="conciliacao-situacao" name="situacao">
+				<option value="">Todas as situações</option>
+				@foreach (var opcao in new[] { "Conciliado", "Diferença de valor", "Ausente no ERP", "Possível duplicidade", "Diferença de quantidade", "Cancelamento para revisão" })
+				{
+					<option value="@opcao" selected="@(situacao == opcao)">@opcao</option>
+				}
+			</select>
+		</div>
+		<button class="btn btn-primary" type="submit" data-loading-label="Filtrando...">Filtrar</button>
+		@if (!string.IsNullOrWhiteSpace(busca) || !string.IsNullOrWhiteSpace(situacao))
+		{
+			<a class="btn btn-outline-secondary" asp-action="Index" asp-route-empresaId="@empresaId">Limpar</a>
+		}
+	</form>
+
+	<div class="table-responsive">
+		<table class="table data-table comparison-table align-middle mb-0">
+			<caption class="visually-hidden">Documentos para conciliação</caption>
+			<thead><tr><th scope="col">Documento</th><th scope="col">Fornecedor</th><th scope="col">Emissão</th><th scope="col">Valor XML</th><th scope="col">Valor ERP</th><th scope="col">Diferença</th><th scope="col">Resultado</th><th scope="col"><span class="visually-hidden">Detalhes</span></th></tr></thead>
+			<tbody>
+				@foreach (var documento in Model)
+				{
+					var diferenca = (documento.ValorXml ?? 0) - (documento.ValorErp ?? 0);
+					var collapseId = $"documento-{documento.Id}";
+					<tr>
+						<td><strong>@documento.Tipo @documento.Numero</strong><small>@documento.Chave</small></td>
+						<td>@documento.Fornecedor</td>
+						<td>@documento.Emissao.ToString("dd/MM/yyyy")</td>
+						<td>@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td>
+						<td>@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td>
+						<td><span class="@(diferenca == 0 ? "neutral-text" : "danger-text")">@diferenca.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span></td>
+						<td><span class="status-badge @(documento.Situacao == "Conciliado" ? "status-success" : documento.Situacao.Contains("Cancelamento") ? "status-danger" : "status-warning")"><span aria-hidden="true"></span>@documento.Situacao</span></td>
+						<td class="text-end"><button class="btn btn-sm btn-row" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">Comparar</button></td>
+					</tr>
+					<tr class="collapse comparison-detail" id="@collapseId">
+						<td colspan="8">
+							<div class="comparison-grid">
+								<div class="comparison-source"><span class="source-label">FONTE FISCAL</span><h3>Documento XML</h3><dl><div><dt>Número</dt><dd>@documento.Numero</dd></div><div><dt>Data de emissão</dt><dd>@documento.Emissao.ToString("dd/MM/yyyy")</dd></div><div><dt>Valor total</dt><dd class="@(diferenca != 0 ? "field-different" : "")">@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</dd></div><div><dt>Fornecedor</dt><dd>@documento.Fornecedor</dd></div></dl></div>
+								<div class="comparison-divider" aria-hidden="true"><span>×</span></div>
+								<div class="comparison-source"><span class="source-label">SISTEMA DE ORIGEM</span><h3>Registro ERP</h3><dl><div><dt>Número</dt><dd>@documento.Numero</dd></div><div><dt>Data de emissão</dt><dd>@documento.Emissao.ToString("dd/MM/yyyy")</dd></div><div><dt>Valor total</dt><dd class="@(diferenca != 0 ? "field-different" : "")">@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</dd></div><div><dt>Fornecedor</dt><dd>@documento.Fornecedor</dd></div></dl></div>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	@if (Model.Count == 0)
+	{
+		<div class="empty-state"><span class="empty-icon" aria-hidden="true">⌕</span><h3>Nenhum documento encontrado</h3><p>Revise os filtros e tente novamente.</p><a class="btn btn-outline-primary btn-sm" asp-action="Index" asp-route-empresaId="@empresaId">Limpar filtros</a></div>
+	}
+</section>
