@@ -23,14 +23,20 @@ public sealed class PainelGeralViewModel
 	public required IReadOnlyList<EmpresaLinhaViewModel> Empresas { get; init; }
 	public required IReadOnlyList<CategoriaViewModel> Categorias { get; init; }
 	public required IReadOnlyList<PendenciaRecenteViewModel> PendenciasRecentes { get; init; }
+	public required IReadOnlyList<SituacaoDocumentoViewModel> SituacoesDocumentos { get; init; }
+	public required IReadOnlyList<EvolucaoConciliacaoViewModel> EvolucaoConciliacao { get; init; }
+	public required IReadOnlyList<EmpresaDivergenciaViewModel> EmpresasComDivergencias { get; init; }
+	public required IReadOnlyList<DocumentosEmpresaViewModel> DocumentosPorEmpresa { get; init; }
 	public required string? SituacaoFiltro { get; init; }
 	public required int? EmpresaFiltro { get; init; }
-	public int MaiorCategoria => Categorias.Count == 0 ? 1 : Categorias.Max(c => c.Quantidade);
+	public int MaiorCategoria => Categorias.Count == 0 ? 1 : Math.Max(1, Categorias.Max(c => c.Quantidade));
 	public int PercentualSemDivergencias => DocumentosIdentificados == 0
 	? 0
 	: (int)Math.Round((double)DocumentosSemDivergencias / DocumentosIdentificados * 100);
+	public int DocumentosConciliados => SituacoesDocumentos.FirstOrDefault(x => x.Nome == "Conciliados")?.Quantidade ?? DocumentosSemDivergencias;
+	public int DocumentosPendentes => SituacoesDocumentos.FirstOrDefault(x => x.Nome == "Pendentes")?.Quantidade ?? 0;
+	public int DocumentosDivergentes => (SituacoesDocumentos.FirstOrDefault(x => x.Nome == "Divergentes")?.Quantidade ?? 0)
+		+ (SituacoesDocumentos.FirstOrDefault(x => x.Nome == "Ausentes")?.Quantidade ?? 0);
+	public int PercentualPendentes => SituacoesDocumentos.Sum(x => x.Quantidade) == 0 ? 0
+		: (int)Math.Round((double)DocumentosPendentes / SituacoesDocumentos.Sum(x => x.Quantidade) * 100);
 }
-
-
-
-

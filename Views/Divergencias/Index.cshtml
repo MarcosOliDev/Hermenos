@@ -6,6 +6,7 @@
 	var categoria = (string?)ViewBag.Categoria;
 	var busca = (string?)ViewBag.Busca;
 	int? empresaId = ViewBag.EmpresaId;
+	var contagemCategorias = Model.GroupBy(x => x.Item.Categoria).Select(g => new { Nome = g.Key, Total = g.Count() }).OrderByDescending(x => x.Total).ToList();
 }
 
 <div class="page-heading">
@@ -18,6 +19,16 @@
 </div>
 
 <section class="surface">
+	<div class="mini-analysis" aria-label="Divergências por categoria">
+		<h2>Divergências por categoria</h2>
+		<div class="mini-analysis-list divergence-category-list">
+			@foreach (var categoriaAtual in contagemCategorias)
+			{
+				<div class="mini-analysis-item"><div><span>@categoriaAtual.Nome</span><strong>@categoriaAtual.Total</strong></div></div>
+			}
+			@if (contagemCategorias.Count == 0) { <p class="mb-0">Sem dados para os filtros informados.</p> }
+		</div>
+	</div>
 	<form method="get" class="filter-panel filter-panel-wide" data-loading-form>
 		@if (empresaId.HasValue)
 		{
@@ -55,7 +66,7 @@
 	</form>
 
 	<div class="table-responsive">
-		<table class="table data-table align-middle mb-0">
+		<table class="table data-table table-divergencias align-middle mb-0">
 			<caption class="visually-hidden">Divergências encontradas</caption>
 			<thead><tr><th scope="col">Empresa / documento</th><th scope="col">Categoria / campo</th><th scope="col">XML</th><th scope="col">ERP</th><th scope="col">Identificada em</th><th scope="col">Responsável</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Detalhes</span></th></tr></thead>
 			<tbody>

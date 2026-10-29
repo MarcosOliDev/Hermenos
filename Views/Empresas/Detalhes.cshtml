@@ -71,7 +71,7 @@
 			</div>
 		</div>
 
-		<div class="tab-pane fade" id="documentos-pane" role="tabpanel" aria-labelledby="documentos-tab" tabindex="0">
+		<div class="tab-pane fade" id="documentos-pane" data-fullscreen-box role="tabpanel" aria-labelledby="documentos-tab" tabindex="0">
 			<div class="tab-pane-heading"><div><h2>Documentos identificados</h2><p>Valores recebidos das fontes XML e ERP.</p></div><a class="btn btn-outline-primary btn-sm" asp-controller="Conciliacao" asp-action="Index" asp-route-empresaId="@Model.Empresa.Id">Ver na conciliação</a></div>
 			<div class="table-responsive">
 				<table class="table data-table align-middle mb-0">
@@ -79,7 +79,7 @@
 					<tbody>
 						@foreach (var documento in Model.Documentos)
 						{
-							<tr><td><strong>@documento.Numero</strong><small>@(documento.Chave == "Não aplicável" ? "Sem chave de acesso" : documento.Chave)</small></td><td>@documento.Tipo<small>@documento.Fornecedor</small></td><td>@documento.Emissao.ToString("dd/MM/yyyy")</td><td>@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td>@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td><span class="status-badge @(documento.Situacao == "Conciliado" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@documento.Situacao</span></td></tr>
+							<tr data-row-detail-url="@Url.Action("Index", "Conciliacao", new { empresaId = Model.Empresa.Id, busca = documento.Numero })"><td><strong>@documento.Numero</strong><small>@(documento.Chave == "Não aplicável" ? "Sem chave de acesso" : documento.Chave)</small></td><td>@documento.Tipo<small>@documento.Fornecedor</small></td><td>@documento.Emissao.ToString("dd/MM/yyyy")</td><td>@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td>@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td><td><span class="status-badge @(documento.Situacao == "Conciliado" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@documento.Situacao</span></td></tr>
 						}
 					</tbody>
 				</table>

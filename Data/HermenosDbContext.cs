@@ -90,7 +90,9 @@ public sealed class HermenosDbContext(DbContextOptions<HermenosDbContext> option
 			entity.Property(x => x.Tipo).HasMaxLength(30).IsRequired();
 			entity.Property(x => x.ChaveAcesso).HasMaxLength(60);
 			entity.Property(x => x.ValorDocumento).HasPrecision(18, 2);
+			entity.Property(x => x.QuantidadeItens).HasPrecision(18, 4);
 			entity.HasIndex(x => x.ChaveAcesso).IsUnique();
+			entity.HasIndex(x => new { x.EmpresaId, x.Numero });
 			entity.HasOne<Empresa>().WithMany().HasForeignKey(x => x.EmpresaId)
 				.OnDelete(DeleteBehavior.Restrict);
 			entity.HasOne<Fornecedor>().WithMany().HasForeignKey(x => x.FornecedorId)

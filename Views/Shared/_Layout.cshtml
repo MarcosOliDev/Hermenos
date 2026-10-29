@@ -11,7 +11,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>@ViewData["Title"] · HERMENOS</title>
 	<script>
-		try { document.documentElement.dataset.theme = localStorage.getItem('hermenos-theme') || 'light'; } catch { document.documentElement.dataset.theme = 'light'; }
+			try { document.documentElement.dataset.theme = localStorage.getItem('hermenos-theme') || 'dark'; } catch { document.documentElement.dataset.theme = 'dark'; }
 	</script>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -55,7 +55,7 @@
 
 			<div class="sidebar-note">
 				<span class="status-dot" aria-hidden="true"></span>
-				<span><strong>Ambiente demonstrativo</strong><small>Dados para validação de interface</small></span>
+				<span><strong>Ambiente de desenvolvimento</strong><small>Dados vindos dos arquivos importados</small></span>
 			</div>
 		</aside>
 
@@ -96,7 +96,7 @@
 			</main>
 			<footer class="app-footer">
 				<span>HERMENOS · Conciliação e monitoramento fiscal</span>
-				<span>Ambiente demonstrativo</span>
+				<span>Ambiente de desenvolvimento</span>
 			</footer>
 		</div>
 	</div>

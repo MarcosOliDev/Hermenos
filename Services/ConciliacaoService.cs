@@ -1,14 +1,15 @@
 ﻿using Hermenos.DTOs.Divergencia;
+using Hermenos.DTOs.Empresa;
 using System.Globalization;
 using System.Text;
 using Hermenos.Services.Interfaces;
-using Hermenos.Data.DadosFicticios;
+using Hermenos.Data;
 using Hermenos.DTOs.DocumentoFiscal;
 using Hermenos.DTOs.Importacao;
 using Hermenos.ViewModels.Divergencia;
 namespace Hermenos.Services;
 
-public sealed class ConciliacaoService(DadosDemonstracao dados, ILogger<ConciliacaoService> logger) : IConciliacaoService
+public sealed class ConciliacaoService(DadosHermenos dados, ILogger<ConciliacaoService> logger) : IConciliacaoService
 {
 	public IReadOnlyList<DivergenciaDTO> ObterDivergencias(int? empresaId, string? situacao, string? categoria)
 	=> dados.Divergencias.Where(d => !empresaId.HasValue
@@ -28,6 +29,8 @@ public sealed class ConciliacaoService(DadosDemonstracao dados, ILogger<Concilia
 	=> dados.Lotes.Where(l => !empresaId.HasValue
 	|| l.IdEmpresa == empresaId).OrderByDescending(l => l.Recebido).ToList();
 
+	public IReadOnlyList<EmpresaResumoDTO> ObterEmpresas() => dados.Empresas;
+
 	public bool EmpresaExiste(int id)
 	=> dados.Empresas.Any(e => e.Id == id);
 
@@ -41,7 +44,7 @@ public sealed class ConciliacaoService(DadosDemonstracao dados, ILogger<Concilia
 	string? categoria, string? busca)
 	{
 		var lista = ObterDivergencias(empresaId, situacao, categoria);
-		logger.LogInformation("Consulta demonstrativa de divergências. EmpresaId {EmpresaId}; Quantidade {Quantidade}",
+		logger.LogInformation("Consulta de divergências. EmpresaId {EmpresaId}; Quantidade {Quantidade}",
 		empresaId, lista.Count);
 		var linhas = lista.Select(d => new DivergenciaLinhaViewModel(d, ObterNomeEmpresa(d.IdEmpresa),
 			ObterNumeroDocumento(d.IdDocumento)));
@@ -62,4 +65,3 @@ public sealed class ConciliacaoService(DadosDemonstracao dados, ILogger<Concilia
 		return semAcentos.Normalize(NormalizationForm.FormC).ToUpperInvariant();
 	}
 }
-

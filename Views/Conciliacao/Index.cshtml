@@ -1,7 +1,9 @@
-﻿@model IReadOnlyList<DocumentoFiscalDTO>
+@model IReadOnlyList<DocumentoFiscalDTO>
 @{
 	ViewData["Title"] = "Conciliação";
 	ViewData["Section"] = "Conciliação";
+	var comparacaoPorEmpresa = (IReadOnlyList<Hermenos.ViewModels.Painel.ComparacaoFonteEmpresaViewModel>)ViewBag.ComparacaoPorEmpresa;
+	var maxComparacaoEmpresa = Math.Max(1, comparacaoPorEmpresa.SelectMany(x => new[] { x.Xml, x.Erp }).DefaultIfEmpty(1).Max());
 	var busca = (string?)ViewBag.Busca;
 	var situacao = (string?)ViewBag.Situacao;
 	int? empresaId = ViewBag.EmpresaId;
@@ -57,9 +59,27 @@
 			<a class="btn btn-outline-secondary" asp-action="Index" asp-route-empresaId="@empresaId">Limpar</a>
 		}
 	</form>
+	<div class="mini-analysis source-analysis" aria-label="Comparação da cobertura XML e ERP por empresa">
+		<h2>Documentos encontrados por fonte e empresa</h2>
+		<div class="mini-analysis-list">
+			@foreach (var item in comparacaoPorEmpresa)
+			{
+				<div class="mini-analysis-item"><div><span>@item.Empresa · XML @item.Xml / ERP @item.Erp</span></div><div class="source-bars"><span style="width:@(item.Xml * 100 / maxComparacaoEmpresa)%" aria-label="XML: @item.Xml"></span><i style="width:@(item.Erp * 100 / maxComparacaoEmpresa)%" aria-label="ERP: @item.Erp"></i></div></div>
+			}
+			@if (comparacaoPorEmpresa.Count == 0)
+			{
+				<p class="mb-0">Sem documentos para comparar.</p>
+			}
+		</div>
+		<div class="evolution-legend"><span><i class="legend-ok"></i>XML</span><span><i class="legend-attention"></i>ERP</span><small>Contagem considera documentos com valor informado na fonte</small></div>
+	</div>
 
-	<div class="table-responsive">
-		<table class="table data-table comparison-table align-middle mb-0">
+	<div class="table-responsive" data-fullscreen-box>
+		<div class="surface-heading">
+			<h2>Documentos</h2>
+		</div>
+
+		<table class="table data-table comparison-table table-conciliacao align-middle mb-0">
 			<caption class="visually-hidden">Documentos para conciliação</caption>
 			<thead><tr><th scope="col">Documento</th><th scope="col">Fornecedor</th><th scope="col">Emissão</th><th scope="col">Valor XML</th><th scope="col">Valor ERP</th><th scope="col">Diferença</th><th scope="col">Resultado</th><th scope="col"><span class="visually-hidden">Detalhes</span></th></tr></thead>
 			<tbody>
@@ -67,6 +87,7 @@
 				{
 					var diferenca = (documento.ValorXml ?? 0) - (documento.ValorErp ?? 0);
 					var collapseId = $"documento-{documento.Id}";
+					var comparacaoId = $"comparacao-documento-{documento.Id}";
 					<tr>
 						<td><strong>@documento.Tipo @documento.Numero</strong><small>@documento.Chave</small></td>
 						<td>@documento.Fornecedor</td>
@@ -75,11 +96,11 @@
 						<td>@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</td>
 						<td><span class="@(diferenca == 0 ? "neutral-text" : "danger-text")">@diferenca.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span></td>
 						<td><span class="status-badge @(documento.Situacao == "Conciliado" ? "status-success" : documento.Situacao.Contains("Cancelamento") ? "status-danger" : "status-warning")"><span aria-hidden="true"></span>@documento.Situacao</span></td>
-						<td class="text-end"><button class="btn btn-sm btn-row" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">Comparar</button></td>
+						<td class="text-end"><button class="btn btn-sm btn-row" type="button" data-box-modal-target="#@comparacaoId" aria-haspopup="dialog" aria-expanded="false">Comparar</button></td>
 					</tr>
 					<tr class="collapse comparison-detail" id="@collapseId">
 						<td colspan="8">
-							<div class="comparison-grid">
+							<div class="comparison-grid" id="@comparacaoId">
 								<div class="comparison-source"><span class="source-label">FONTE FISCAL</span><h3>Documento XML</h3><dl><div><dt>Número</dt><dd>@documento.Numero</dd></div><div><dt>Data de emissão</dt><dd>@documento.Emissao.ToString("dd/MM/yyyy")</dd></div><div><dt>Valor total</dt><dd class="@(diferenca != 0 ? "field-different" : "")">@(documento.ValorXml?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</dd></div><div><dt>Fornecedor</dt><dd>@documento.Fornecedor</dd></div></dl></div>
 								<div class="comparison-divider" aria-hidden="true"><span>×</span></div>
 								<div class="comparison-source"><span class="source-label">SISTEMA DE ORIGEM</span><h3>Registro ERP</h3><dl><div><dt>Número</dt><dd>@documento.Numero</dd></div><div><dt>Data de emissão</dt><dd>@documento.Emissao.ToString("dd/MM/yyyy")</dd></div><div><dt>Valor total</dt><dd class="@(diferenca != 0 ? "field-different" : "")">@(documento.ValorErp?.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")) ?? "Não localizado")</dd></div><div><dt>Fornecedor</dt><dd>@documento.Fornecedor</dd></div></dl></div>

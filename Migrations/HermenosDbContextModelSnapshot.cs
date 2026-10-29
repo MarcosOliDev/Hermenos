@@ -188,6 +188,10 @@ namespace Hermenos.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)");
 
+                    b.Property<decimal?>("QuantidadeItens")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -205,11 +209,11 @@ namespace Hermenos.Migrations
                     b.HasIndex("ChaveAcesso")
                         .IsUnique();
 
-                    b.HasIndex("EmpresaId");
-
                     b.HasIndex("FornecedorId");
 
                     b.HasIndex("LoteImportacaoId");
+
+                    b.HasIndex("EmpresaId", "Numero");
 
                     b.ToTable("DocumentosFiscais", (string)null);
                 });

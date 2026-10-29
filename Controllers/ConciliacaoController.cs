@@ -1,5 +1,6 @@
 ﻿using Hermenos.Services.Interfaces;
 using Hermenos.ViewModels.Divergencia;
+using Hermenos.ViewModels.Painel;
 using Microsoft.AspNetCore.Mvc;
 namespace Hermenos.Controllers;
 
@@ -19,9 +20,12 @@ public sealed class ConciliacaoController(IConciliacaoService service) : Control
 		ViewBag.NomeEmpresa = empresaId.HasValue
 		? service.ObterNomeEmpresa(empresaId.Value)
 		: null;
-		return View
-		(service.ObterDocumentos(empresaId,
-		busca, situacao));
+		var documentos = service.ObterDocumentos(empresaId, busca, situacao);
+		ViewBag.ComparacaoPorEmpresa = documentos.GroupBy(d => d.IdEmpresa).Select(g => new ComparacaoFonteEmpresaViewModel(
+			service.ObterNomeEmpresa(g.Key),
+			g.Count(d => d.ValorXml.HasValue),
+			g.Count(d => d.ValorErp.HasValue))).ToList();
+		return View(documentos);
 	}
 
 	public IActionResult Divergencias(
@@ -50,6 +54,7 @@ public sealed class ConciliacaoController(IConciliacaoService service) : Control
 		if (!ValidarEmpresa(empresaId))
 			return BadRequest();
 		ViewBag.EmpresaId = empresaId;
+		ViewBag.Empresas = service.ObterEmpresas();
 		ViewBag.NomeEmpresa = empresaId.HasValue
 		? service.ObterNomeEmpresa(empresaId.Value)
 		: null;
@@ -60,5 +65,3 @@ public sealed class ConciliacaoController(IConciliacaoService service) : Control
 	private bool ValidarEmpresa(int? empresaId)
 	=> !empresaId.HasValue || service.EmpresaExiste(empresaId.Value);
 }
-
-

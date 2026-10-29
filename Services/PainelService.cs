@@ -1,10 +1,10 @@
 using Hermenos.Services.Interfaces;
-using Hermenos.Data.DadosFicticios;
+using Hermenos.Data;
 using Hermenos.ViewModels.Empresa;
 using Hermenos.ViewModels.Painel;
 namespace Hermenos.Services;
 
-public sealed class PainelService(DadosDemonstracao dados, ILogger<PainelService> logger) : IPainelService
+public sealed class PainelService(DadosHermenos dados, ILogger<PainelService> logger) : IPainelService
 {
 	public PainelGeralViewModel ObterResumoGeral(string? situacao, int? empresaId)
 	{
@@ -32,9 +32,38 @@ public sealed class PainelService(DadosDemonstracao dados, ILogger<PainelService
 		"Diferença de quantidade", "Possível duplicidade", "Situação de cancelamento para revisão"
 		};
 
-		var divergenciasFiltradas = dados.Divergencias.Where(d => !empresaId.HasValue
-		|| d.IdEmpresa == empresaId).Where(d => string.IsNullOrWhiteSpace(situacao)
-		|| d.Situacao == situacao);
+		// O filtro "Em dia/Com pendências" pertence à empresa, não à divergência.
+		var empresasFiltradasIds = linhas.Select(e => e.Id).ToHashSet();
+		var documentosPainel = dados.Documentos.Where(d => empresasFiltradasIds.Contains(d.IdEmpresa)).ToList();
+		var divergenciasFiltradas = dados.Divergencias
+			.Where(d => empresasFiltradasIds.Contains(d.IdEmpresa));
+		var situacoesDocumentos = new[]
+		{
+			new SituacaoDocumentoViewModel("Conciliados", documentosPainel.Count(d => Classificar(d) == "Conciliado"), "#16a34a"),
+			new SituacaoDocumentoViewModel("Divergentes", documentosPainel.Count(d => Classificar(d) == "Divergente"), "#f59e0b"),
+			new SituacaoDocumentoViewModel("Pendentes", documentosPainel.Count(d => Classificar(d) == "Pendente"), "#3b82f6"),
+			new SituacaoDocumentoViewModel("Ausentes", documentosPainel.Count(d => Classificar(d) == "Ausente"), "#ef4444")
+		};
+		var evolucao = documentosPainel.GroupBy(d => (d.Emissao.Year, d.Emissao.Month, Semana: (d.Emissao.Day - 1) / 7 + 1))
+			.OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month).ThenBy(g => g.Key.Semana)
+			.Select(g => new EvolucaoConciliacaoViewModel(
+				$"{Math.Min((g.Key.Semana - 1) * 7 + 1, DateTime.DaysInMonth(g.Key.Year, g.Key.Month)):00}–{Math.Min(g.Key.Semana * 7, DateTime.DaysInMonth(g.Key.Year, g.Key.Month)):00}/{g.Key.Month:00}",
+				g.Count(d => Classificar(d) == "Conciliado"),
+				g.Count(d => Classificar(d) == "Divergente"))).ToList();
+		var empresasComDivergencias = divergenciasFiltradas
+			.Where(d => d.Situacao is "Pendente" or "Em análise")
+			.GroupBy(d => d.IdEmpresa)
+			.Select(g => new EmpresaDivergenciaViewModel(
+				dados.Empresas.Single(e => e.Id == g.Key).Nome, g.Count()))
+			.OrderByDescending(e => e.Quantidade).Take(5).ToList();
+		var documentosPorEmpresa = linhas.Select(e =>
+		{
+			var docsDaEmpresa = documentosPainel.Where(d => d.IdEmpresa == e.Id).ToList();
+			return new DocumentosEmpresaViewModel(e.Nome,
+				docsDaEmpresa.Count(d => Classificar(d) == "Conciliado"),
+				docsDaEmpresa.Count(d => Classificar(d) == "Pendente"),
+				docsDaEmpresa.Count(d => Classificar(d) == "Divergente" || Classificar(d) == "Ausente"));
+		}).OrderByDescending(e => e.Pendentes + e.Divergentes + e.Conciliados).Take(5).ToList();
 
 		var categorias = nomesCategorias.Select((nome, i) => new CategoriaViewModel(nome,
 		divergenciasFiltradas.Count(d => d.Categoria == nome),
@@ -44,9 +73,7 @@ public sealed class PainelService(DadosDemonstracao dados, ILogger<PainelService
 		d => d.Situacao is "Pendente" or "Em análise").OrderByDescending(d => d.Identificada).Select(
 		d => new PendenciaRecenteViewModel(d.Id, d.IdEmpresa, dados.Empresas.Single(e => e.Id == d.IdEmpresa).Nome,
 		dados.Documentos.Single(x => x.Id == d.IdDocumento).Numero, d.Categoria,
-		d.Identificada, d.Situacao)).Where(d => string.IsNullOrWhiteSpace(situacao)
-		|| d.Situacao == situacao).Where(d => !empresaId.HasValue
-		|| d.EmpresaId == empresaId).ToList();
+		d.Identificada, d.Situacao)).Where(d => empresasFiltradasIds.Contains(d.EmpresaId)).ToList();
 
 		return new()
 		{
@@ -68,10 +95,22 @@ public sealed class PainelService(DadosDemonstracao dados, ILogger<PainelService
 			Empresas = linhas,
 			Categorias = categorias,
 			PendenciasRecentes = recentes,
+			SituacoesDocumentos = situacoesDocumentos,
+			EvolucaoConciliacao = evolucao,
+			EmpresasComDivergencias = empresasComDivergencias,
+			DocumentosPorEmpresa = documentosPorEmpresa,
 			SituacaoFiltro = situacao,
 			EmpresaFiltro = empresaId
 		};
 	}
+
+	private string Classificar(Hermenos.DTOs.DocumentoFiscal.DocumentoFiscalDTO documento)
+	{
+		if (documento.Situacao == "Conciliado") return "Conciliado";
+		if (documento.Situacao.Contains("Ausente", StringComparison.OrdinalIgnoreCase)
+			|| documento.ValorXml is null || documento.ValorErp is null) return "Ausente";
+		if (dados.Divergencias.Any(d => d.IdDocumento == documento.Id
+			&& d.Situacao is "Pendente" or "Em análise")) return "Pendente";
+		return "Divergente";
+	}
 }
-
-

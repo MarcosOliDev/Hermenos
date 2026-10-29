@@ -12,7 +12,7 @@
 		<h1>Empresas</h1>
 		<p>Consulte a situação fiscal e acesse os documentos de cada empresa.</p>
 	</div>
-	<span class="result-count"><strong>@Model.Count</strong> @(Model.Count == 1 ? "empresa encontrada" : "empresas encontradas")</span>
+	<span class="result-count" aria-live="polite"><strong>@Model.Count</strong><span>@(Model.Count == 1 ? "empresa encontrada" : "empresas encontradas")</span></span>
 </div>
 
 <section class="surface">
@@ -40,7 +40,7 @@
 	</form>
 
 	<div class="table-responsive">
-		<table class="table data-table align-middle mb-0">
+		<table class="table data-table table-empresas align-middle mb-0">
 			<caption class="visually-hidden">Empresas encontradas</caption>
 			<thead><tr><th scope="col">Empresa</th><th scope="col">Documentos</th><th scope="col">Divergências</th><th scope="col">Falhas</th><th scope="col">Última importação</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
 			<tbody>

@@ -2,12 +2,12 @@
 using System.Globalization;
 using System.Text;
 using Hermenos.ViewModels;
-using Hermenos.Data.DadosFicticios;
+using Hermenos.Data;
 using Hermenos.ViewModels.Empresa;
 using Hermenos.ViewModels.Painel;
 namespace Hermenos.Services;
 
-public sealed class EmpresaService(DadosDemonstracao dados, ILogger<EmpresaService> logger) : IEmpresaService
+public sealed class EmpresaService(DadosHermenos dados, ILogger<EmpresaService> logger) : IEmpresaService
 {
 	public IReadOnlyList<EmpresaLinhaViewModel> ObterEmpresas(string? busca, string? situacao)
 	{
@@ -49,7 +49,7 @@ public sealed class EmpresaService(DadosDemonstracao dados, ILogger<EmpresaServi
 		var empresa = dados.Empresas.SingleOrDefault(e => e.Id == id);
 		if (empresa is null)
 		{
-			logger.LogWarning("Empresa demonstrativa não encontrada. EmpresaId {EmpresaId}", id);
+			logger.LogWarning("Empresa não encontrada. EmpresaId {EmpresaId}", id);
 			return null;
 		}
 
