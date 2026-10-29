@@ -13,7 +13,88 @@
 		<p>Consulte a situação fiscal e acesse os documentos de cada empresa.</p>
 	</div>
 	<span class="result-count" aria-live="polite"><strong>@Model.Count</strong><span>@(Model.Count == 1 ? "empresa encontrada" : "empresas encontradas")</span></span>
+	<button class="btn btn-primary" type="button" id="abrir-cadastro-empresa">
+		Cadastrar empresa
+	</button>
 </div>
+
+<div id="cadastro-empresa-dialog"
+	 class="comparison-grid empresa-cadastro-modal"
+	 role="dialog"
+	 aria-modal="true"
+	 aria-labelledby="cadastro-empresa-titulo"
+	 hidden>
+
+	<div class="empresa-dialog-header">
+		<div>
+			<span class="eyebrow">NOVA EMPRESA</span>
+			<h2 id="cadastro-empresa-titulo">Cadastrar empresa</h2>
+			<p>Informe os dados cadastrais da empresa.</p>
+		</div>
+	</div>
+
+	<form id="form-cadastro-empresa"
+		  asp-controller="Empresas"
+		  asp-action="Cadastrar"
+		  method="post">
+		@Html.AntiForgeryToken()
+
+		<div class="filter-field">
+			<label for="cadastro-empresa-nome">Nome da empresa</label>
+			<input class="form-control"
+				   id="cadastro-empresa-nome"
+				   name="Nome"
+				   maxlength="200"
+				   required />
+		</div>
+
+		<div class="filter-field">
+			<label for="cadastro-empresa-cnpj">CNPJ</label>
+			<input class="form-control"
+				   id="cadastro-empresa-cnpj"
+				   name="Cnpj"
+				   maxlength="18"
+				   placeholder="00.000.000/0000-00"
+				   required />
+		</div>
+
+		<div class="filter-field">
+			<label for="cadastro-empresa-usuario">Usuário de cadastro</label>
+			<input class="form-control"
+				   id="cadastro-empresa-usuario"
+				   value="---------"
+				   readonly />
+		</div>
+
+		<div class="filter-field">
+			<label for="cadastro-empresa-data">Data de cadastro</label>
+			<input class="form-control"
+				   type="text"
+				   id="cadastro-empresa-data"
+				   value="---------"
+				   readonly />
+		</div>
+
+		<p id="cadastro-empresa-mensagem"
+		   role="alert"
+		   aria-live="polite"></p>
+
+		<div class="d-flex justify-content-end gap-2 mt-3">
+			<button type="button"
+					class="btn btn-outline-secondary"
+					id="cancelar-cadastro-empresa">
+				Cancelar
+			</button>
+
+			<button type="submit"
+					class="btn btn-primary"
+					id="salvar-cadastro-empresa">
+				Cadastrar
+			</button>
+		</div>
+	</form>
+</div>
+
 
 <section class="surface">
 	<form method="get" class="filter-panel filter-panel-wide" data-loading-form>

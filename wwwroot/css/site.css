@@ -5736,4 +5736,1524 @@ html[data-theme="dark"] .import-feedback.is-error {
 		.table-responsive[data-fullscreen-box] > .surface-heading .box-fullscreen-toggle {
 			flex-shrink: 0;
 		}
+
+	/* Modal de cadastro de empresa */
+	.empresa-cadastro-modal {
+		display: block;
+		width: min(560px, calc(100vw - 32px));
+		max-height: calc(100vh - 32px);
+		overflow-y: auto;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 28px;
+	}
+
+		.empresa-cadastro-modal[hidden] {
+			display: none !important;
+		}
+
+		.empresa-cadastro-modal .empresa-dialog-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 16px;
+			margin-bottom: 24px;
+		}
+
+		.empresa-cadastro-modal #form-cadastro-empresa {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			width: 100%;
+			margin: 0;
+		}
+
+			.empresa-cadastro-modal #form-cadastro-empresa .filter-field,
+			.empresa-cadastro-modal #form-cadastro-empresa .form-group {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				width: 100%;
+				margin: 0;
+			}
+
+			.empresa-cadastro-modal #form-cadastro-empresa input {
+				width: 100%;
+				min-width: 0;
+				box-sizing: border-box;
+			}
+
+			.empresa-cadastro-modal #form-cadastro-empresa .form-actions {
+				display: flex;
+				justify-content: flex-end;
+				gap: 8px;
+				margin-top: 8px;
+			}
+
+	@media (max-width: 600px) {
+		.empresa-cadastro-modal {
+			padding: 20px;
+		}
+	}
+
+
+	/* Modo claro: inversão suave do tema escuro, com tons avermelhados */
+	html:not([data-theme="dark"]) {
+		color-scheme: light;
+		--background: #f5f1f1;
+		--surface: #fcf9f9;
+		--text: #352b2d;
+		--muted: #766568;
+		--subtle: #968487;
+		--border: #e7d9db;
+		--border-strong: #d5bfc3;
+		--navy: #f1e6e8;
+		--navy-soft: #f7edef;
+		--primary: #c8757d;
+		--primary-dark: #b55e68;
+		--info: #f5e9eb;
+		--info-bg: #f5e9eb;
+		--success-bg: #eaf3ed;
+		--warning-bg: #f8efe2;
+		--danger-bg: #f8e9e9;
+	}
+
+		/* Fundo geral */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background: var(--background);
+			color: var(--text);
+		}
+
+		/* Menu e barra superior */
+		html:not([data-theme="dark"]) .sidebar {
+			background: linear-gradient(180deg, #f7eeee 0%, #efe3e5 100%);
+			border-color: var(--border);
+		}
+
+		html:not([data-theme="dark"]) .topbar {
+			background: rgba(252, 247, 248, .96);
+			border-color: var(--border);
+			backdrop-filter: blur(18px);
+		}
+
+		/* Cards e superfícies: tons claros, sem cores saturadas */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .comparison-source,
+		html:not([data-theme="dark"]) .filter-panel,
+		html:not([data-theme="dark"]) .summary-strip,
+		html:not([data-theme="dark"]) .empty-state {
+			background: linear-gradient(145deg, #fffdfd, #f7f0f1);
+			border-color: var(--border);
+			color: var(--text);
+		}
+
+			/* Variações suaves dos cards */
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 1) {
+				background: linear-gradient(145deg, #f8eded, #fdf8f8);
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 2) {
+				background: linear-gradient(145deg, #f7eeee, #fcf8f8);
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 3) {
+				background: linear-gradient(145deg, #f0ebee, #faf7f8);
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 4) {
+				background: linear-gradient(145deg, #f6e9e9, #fcf7f7);
+			}
+
+		/* Botões e destaques */
+		html:not([data-theme="dark"]) .btn-primary,
+		html:not([data-theme="dark"]) .nav-item.active,
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background: var(--primary);
+			border-color: var(--primary);
+			color: #ffffff;
+		}
+
+			html:not([data-theme="dark"]) .btn-primary:hover {
+				background: var(--primary-dark);
+				border-color: var(--primary-dark);
+				color: #ffffff;
+			}
+
+		html:not([data-theme="dark"]) .nav-item.active {
+			box-shadow: 0 5px 16px rgba(160, 83, 94, .12);
+		}
+
+		/* Links: avermelhados escuros para manter a leitura */
+		html:not([data-theme="dark"]) a,
+		html:not([data-theme="dark"]) .link-action,
+		html:not([data-theme="dark"]) .icon-link,
+		html:not([data-theme="dark"]) .primary-cell {
+			color: #a34f5b;
+		}
+
+		/* Campos de formulário */
+		html:not([data-theme="dark"]) .form-control,
+		html:not([data-theme="dark"]) .form-select,
+		html:not([data-theme="dark"]) .theme-toggle {
+			background-color: #fffafa;
+			color: #352b2d;
+			border-color: #d9c5c8;
+		}
+
+			html:not([data-theme="dark"]) .form-control::placeholder {
+				color: #988589;
+			}
+
+			html:not([data-theme="dark"]) .form-control:focus,
+			html:not([data-theme="dark"]) .form-select:focus {
+				border-color: #c8757d;
+				box-shadow: 0 0 0 .2rem rgba(200, 117, 125, .16);
+			}
+
+		/* Tabelas */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td {
+			background: transparent;
+			color: #352b2d;
+			border-color: #e9dcde;
+		}
+
+			html:not([data-theme="dark"]) .data-table thead th {
+				background: #f0e4e6;
+				color: #49373b;
+				border-color: #e2d0d3;
+			}
+
+			html:not([data-theme="dark"]) .data-table tbody tr:hover td {
+				background: #f8edef;
+			}
+
+			html:not([data-theme="dark"]) .data-table td small {
+				color: #766568;
+			}
+
+		/* Títulos e textos: força cores legíveis, sem branco herdado */
+		html:not([data-theme="dark"]) .content,
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .surface p,
+		html:not([data-theme="dark"]) .surface-heading h2,
+		html:not([data-theme="dark"]) .surface-heading p,
+		html:not([data-theme="dark"]) .overview-card h2,
+		html:not([data-theme="dark"]) .metric-card > strong,
+		html:not([data-theme="dark"]) .metric-label,
+		html:not([data-theme="dark"]) .summary-strip strong,
+		html:not([data-theme="dark"]) .summary-strip span,
+		html:not([data-theme="dark"]) .filter-field label,
+		html:not([data-theme="dark"]) .company-identity h1,
+		html:not([data-theme="dark"]) .company-hero p,
+		html:not([data-theme="dark"]) .detail-metadata dt,
+		html:not([data-theme="dark"]) .detail-metadata dd,
+		html:not([data-theme="dark"]) .attention-list strong,
+		html:not([data-theme="dark"]) .activity-copy strong {
+			color: #352b2d;
+		}
+
+		html:not([data-theme="dark"]) .surface-heading p,
+		html:not([data-theme="dark"]) .activity-copy small,
+		html:not([data-theme="dark"]) .metric-card small,
+		html:not([data-theme="dark"]) .updated-at,
+		html:not([data-theme="dark"]) .attention-list small {
+			color: #766568;
+		}
+
+		/* Ficha da empresa */
+		html:not([data-theme="dark"]) .company-hero {
+			background: linear-gradient(110deg, #fffafa, #f3e8ea);
+			border-color: var(--border);
+		}
+
+		html:not([data-theme="dark"]) .company-monogram {
+			background: linear-gradient(145deg, #d99aa0, #bd737d);
+			color: #ffffff;
+		}
+
+		/* Banners */
+		html:not([data-theme="dark"]) .info-banner {
+			background: #f5e9eb;
+			border-color: #e6cdd1;
+			color: #49373b;
+		}
+
+			html:not([data-theme="dark"]) .info-banner span {
+				color: #766066;
+			}
+
+		html:not([data-theme="dark"]) .context-bar {
+			background: #f4e9eb;
+			border-color: #e5d3d6;
+			color: #49373b;
+		}
+
+		html:not([data-theme="dark"]) .context-copy,
+		html:not([data-theme="dark"]) .context-copy strong {
+			color: #49373b;
+		}
+
+		/* Comparação de documentos */
+		html:not([data-theme="dark"]) .comparison-source dl > div,
+		html:not([data-theme="dark"]) .value-comparison > div {
+			background: #f7eff0;
+			border-color: #e7d9db;
+		}
+
+		html:not([data-theme="dark"]) .comparison-source h3,
+		html:not([data-theme="dark"]) .comparison-source dt,
+		html:not([data-theme="dark"]) .comparison-source dd,
+		html:not([data-theme="dark"]) .value-comparison span,
+		html:not([data-theme="dark"]) .value-comparison strong {
+			color: #352b2d;
+		}
+
+		/* Modal de cadastro */
+		html:not([data-theme="dark"]) .empresa-cadastro-modal {
+			background: linear-gradient(145deg, #fffdfd, #f7f0f1);
+			border-color: #e7d9db;
+			color: #352b2d;
+		}
+
+			html:not([data-theme="dark"]) .empresa-cadastro-modal h2,
+			html:not([data-theme="dark"]) .empresa-cadastro-modal p,
+			html:not([data-theme="dark"]) .empresa-cadastro-modal label {
+				color: #352b2d;
+			}
+
+			html:not([data-theme="dark"]) .empresa-cadastro-modal[hidden] {
+				display: none !important;
+			}
+
+		/* Controle de tela cheia */
+		html:not([data-theme="dark"]) .box-fullscreen-toggle {
+			background: #fffafa;
+			border-color: #d5bfc3;
+			color: #49373b;
+		}
+
+		/* Status continuam com fundos suaves e texto contrastante */
+		html:not([data-theme="dark"]) .status-success {
+			background: #e4f2e9;
+			color: #246344;
+		}
+
+		html:not([data-theme="dark"]) .status-warning {
+			background: #f8efdf;
+			color: #80551f;
+		}
+
+		html:not([data-theme="dark"]) .status-danger {
+			background: #f8e6e8;
+			color: #983f4b;
+		}
+
+		html:not([data-theme="dark"]) .status-info {
+			background: #e9eef5;
+			color: #385775;
+		}
+
+
+	/* HERMENOS — compactação do painel para recuperar o layout original */
+	@media (min-width: 992px) {
+		.content:has(.dashboard-grid) {
+			padding-top: 12px !important;
+			padding-bottom: 8px !important;
+			gap: 8px !important;
+		}
+
+			.content:has(.dashboard-grid) > .page-heading {
+				margin-bottom: 6px !important;
+			}
+
+			.content:has(.dashboard-grid) .page-heading h1 {
+				font-size: 25px !important;
+				line-height: 1.2 !important;
+				margin-bottom: 4px !important;
+			}
+
+			.content:has(.dashboard-grid) .page-heading p {
+				font-size: 13px !important;
+				line-height: 1.35 !important;
+			}
+
+			.content:has(.dashboard-grid) > .context-bar {
+				margin-bottom: 0 !important;
+				padding: 6px 10px !important;
+				min-height: 34px !important;
+				font-size: 11px !important;
+			}
+
+			.content:has(.dashboard-grid) > .metric-grid {
+				margin-bottom: 0 !important;
+				gap: 8px !important;
+			}
+
+			.content:has(.dashboard-grid) .metric-card {
+				min-height: 78px !important;
+				padding: 8px 10px !important;
+			}
+
+			.content:has(.dashboard-grid) .metric-label {
+				font-size: 12px !important;
+			}
+
+			.content:has(.dashboard-grid) .metric-card > strong,
+			.content:has(.dashboard-grid) .metric-content > strong {
+				font-size: 25px !important;
+				line-height: 1.1 !important;
+			}
+
+			.content:has(.dashboard-grid) .metric-card small {
+				font-size: 11px !important;
+				line-height: 1.25 !important;
+			}
+
+			/* Gráfico principal */
+			.content:has(.dashboard-grid) > .dashboard-grid {
+				flex-basis: 250px !important;
+				min-height: 0 !important;
+				margin-bottom: 0 !important;
+				gap: 10px !important;
+			}
+
+			.content:has(.dashboard-grid) .surface-heading {
+				padding: 9px 12px !important;
+			}
+
+				.content:has(.dashboard-grid) .surface-heading h2 {
+					font-size: 17px !important;
+					line-height: 1.2 !important;
+					margin-bottom: 2px !important;
+				}
+
+				.content:has(.dashboard-grid) .surface-heading p {
+					font-size: 12px !important;
+					line-height: 1.3 !important;
+				}
+
+			.content:has(.dashboard-grid) .dashboard-chart-tabs .nav-link {
+				padding: 5px 7px !important;
+				font-size: 11px !important;
+			}
+
+			.content:has(.dashboard-grid) .reconciliation-chart {
+				min-height: 0 !important;
+				height: 100% !important;
+				gap: 14px !important;
+				padding: 6px !important;
+			}
+
+			.content:has(.dashboard-grid) .reconciliation-donut {
+				width: 116px !important;
+				height: 116px !important;
+				flex-basis: 116px !important;
+			}
+
+				.content:has(.dashboard-grid) .reconciliation-donut > div {
+					width: 84px !important;
+					height: 84px !important;
+				}
+
+			/* Painéis inferiores e tabelas */
+			.content:has(.dashboard-grid) .chart-list {
+				padding: 0 0 3px !important;
+			}
+
+			.content:has(.dashboard-grid) .chart-item {
+				padding: 4px 12px !important;
+			}
+
+			.content:has(.dashboard-grid) .table-responsive {
+				max-height: max(150px, min(65vh, calc(100vh - 500px))) !important;
+			}
+
+			.content:has(.dashboard-grid) .data-table thead th {
+				padding: 4px 7px !important;
+				font-size: 10px !important;
+			}
+
+			.content:has(.dashboard-grid) .data-table tbody td {
+				padding: 5px 7px !important;
+				font-size: 12px !important;
+			}
+
+			.content:has(.dashboard-grid) .status-badge {
+				padding: 3px 6px !important;
+				font-size: 10px !important;
+			}
+	}
+
+	/* Telas mais baixas: libera espaço vertical para os painéis inferiores */
+	@media (min-width: 992px) and (max-height: 850px) {
+		.content:has(.dashboard-grid) > .dashboard-grid {
+			flex-basis: 235px !important;
+		}
+
+		.content:has(.dashboard-grid) .metric-card {
+			min-height: 74px !important;
+		}
+
+		.content:has(.dashboard-grid) .surface-heading {
+			padding: 7px 10px !important;
+		}
+	}
+
+
+	/* ==========================================================
+   HERMENOS — MODO CLARO FINAL
+   Cinza + vermelho, tipografia compacta e layout otimizado.
+   ========================================================== */
+
+	html:not([data-theme="dark"]) {
+		color-scheme: light;
+		--background: #eeeded;
+		--surface: #f5f4f4;
+		--text: #332d2f;
+		--muted: #62585b;
+		--subtle: #756a6d;
+		--border: #d9d4d5;
+		--border-strong: #c9bfc2;
+		--navy: #e8e5e6;
+		--navy-soft: #f0eded;
+		--primary: #bd6471;
+		--primary-dark: #a44958;
+	}
+
+		/* Fundo e estrutura */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background: #eeeded;
+			color: #332d2f;
+		}
+
+		/* Barra superior */
+		html:not([data-theme="dark"]) .topbar {
+			background: #f4f2f2;
+			border-color: #d9d4d5;
+		}
+
+		/* Menu lateral */
+		html:not([data-theme="dark"]) .sidebar {
+			background: #e8e6e6;
+			border-color: #d5d0d1;
+		}
+
+		html:not([data-theme="dark"]) .sidebar-nav .nav-item {
+			color: #463b3e;
+		}
+
+			html:not([data-theme="dark"]) .sidebar-nav .nav-item:hover {
+				background: #ddd7d8;
+				color: #963f4e;
+			}
+
+			html:not([data-theme="dark"]) .sidebar-nav .nav-item.active {
+				background: #bd6471;
+				color: #fff;
+			}
+
+		/* Tipografia: redução discreta, sem diminuir demais */
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) {
+			padding-top: 12px;
+			padding-bottom: 8px;
+		}
+
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .page-heading h1 {
+				font-size: 24px;
+				line-height: 1.2;
+				margin-bottom: 4px;
+			}
+
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .page-heading p {
+				font-size: 13px;
+				line-height: 1.35;
+			}
+
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .eyebrow {
+				font-size: 11px;
+				letter-spacing: .08em;
+				color: #a44958;
+			}
+
+			/* Barra de competência */
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) > .context-bar {
+				padding: 6px 10px;
+				margin-bottom: 8px;
+				font-size: 11px;
+			}
+
+	/* Indicadores superiores */
+	@media (min-width: 992px) {
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) > .metric-grid {
+			margin-bottom: 8px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .metric-card {
+			min-height: 76px;
+			padding: 8px 10px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .metric-label {
+			font-size: 12px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .metric-card > strong,
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .metric-content > strong {
+			font-size: 24px;
+			line-height: 1.1;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .metric-card small {
+			font-size: 11px;
+		}
+
+		/* Gráfico e análise: preserva espaço para as tabelas */
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) > .dashboard-grid {
+			flex: 0 0 250px;
+			margin-bottom: 8px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .surface-heading {
+			padding: 8px 10px;
+		}
+
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .surface-heading h2 {
+				font-size: 16px;
+				line-height: 1.25;
+				margin-bottom: 2px;
+			}
+
+			html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .surface-heading p {
+				font-size: 12px;
+				line-height: 1.3;
+			}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .dashboard-chart-tabs .nav-link {
+			padding: 5px 7px;
+			font-size: 10px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) > .dashboard-data-grid {
+			gap: 10px;
+			min-height: 0;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .data-table thead th {
+			padding: 4px 6px;
+			font-size: 10px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .data-table tbody td {
+			padding: 5px 6px;
+			font-size: 11px;
+		}
+
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) .status-badge {
+			padding: 3px 6px;
+			font-size: 10px;
+		}
+	}
+
+	/* Superfícies: cinza-claro em vez de branco intenso */
+	html:not([data-theme="dark"]) .surface,
+	html:not([data-theme="dark"]) .metric-card,
+	html:not([data-theme="dark"]) .overview-card,
+	html:not([data-theme="dark"]) .comparison-source,
+	html:not([data-theme="dark"]) .filter-panel,
+	html:not([data-theme="dark"]) .summary-strip,
+	html:not([data-theme="dark"]) .empty-state {
+		background: #f5f3f3;
+		border-color: #d9d4d5;
+		color: #332d2f;
+		box-shadow: 0 2px 5px rgba(50, 35, 38, .035);
+	}
+
+		/* Variação sutil nos indicadores */
+		html:not([data-theme="dark"]) .metric-card:nth-child(4n + 1) {
+			background: #f5f2f2;
+		}
+
+		html:not([data-theme="dark"]) .metric-card:nth-child(4n + 2) {
+			background: #f0f1ed;
+		}
+
+		html:not([data-theme="dark"]) .metric-card:nth-child(4n + 3) {
+			background: #eef0f2;
+		}
+
+		html:not([data-theme="dark"]) .metric-card:nth-child(4n) {
+			background: #f5eeee;
+		}
+
+	/* Textos: contraste consistente */
+	html:not([data-theme="dark"]) .page-heading,
+	html:not([data-theme="dark"]) .surface-heading,
+	html:not([data-theme="dark"]) .metric-card,
+	html:not([data-theme="dark"]) .overview-card,
+	html:not([data-theme="dark"]) .chart-legend,
+	html:not([data-theme="dark"]) .chart-footnote {
+		color: #332d2f;
+	}
+
+		html:not([data-theme="dark"]) .page-heading p,
+		html:not([data-theme="dark"]) .surface-heading p,
+		html:not([data-theme="dark"]) .metric-card small,
+		html:not([data-theme="dark"]) .chart-footnote,
+		html:not([data-theme="dark"]) .user-copy small {
+			color: #62585b;
+		}
+
+	/* Links e botões */
+	html:not([data-theme="dark"]) a {
+		color: #a44958;
+	}
+
+	html:not([data-theme="dark"]) .btn-primary {
+		background: #bd6471;
+		border-color: #bd6471;
+		color: #fff;
+	}
+
+		html:not([data-theme="dark"]) .btn-primary:hover {
+			background: #a44958;
+			border-color: #a44958;
+			color: #fff;
+		}
+
+	/* Abas */
+	html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link {
+		color: #514548;
+	}
+
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background: #bd6471;
+			color: #fff;
+		}
+
+	/* Tabelas */
+	html:not([data-theme="dark"]) .data-table,
+	html:not([data-theme="dark"]) .data-table tbody,
+	html:not([data-theme="dark"]) .data-table tr,
+	html:not([data-theme="dark"]) .data-table td {
+		background-color: #f5f3f3;
+		color: #332d2f;
+		border-color: #d9d4d5;
+	}
+
+		html:not([data-theme="dark"]) .data-table thead th {
+			background: #e6e1e2;
+			color: #403437;
+			border-color: #d9d4d5;
+		}
+
+		html:not([data-theme="dark"]) .data-table tbody tr:hover {
+			background: #ebe7e8;
+		}
+
+	/* Botão de alternância */
+	html:not([data-theme="dark"]) .theme-toggle {
+		background: #f3f1f1;
+		color: #332d2f;
+		border-color: #c9bfc2;
+	}
+
+	/* Campos */
+	html:not([data-theme="dark"]) .form-control,
+	html:not([data-theme="dark"]) .form-select,
+	html:not([data-theme="dark"]) input,
+	html:not([data-theme="dark"]) select,
+	html:not([data-theme="dark"]) textarea {
+		background-color: #f7f6f6;
+		color: #332d2f;
+		border-color: #c9bfc2;
+	}
+
+		html:not([data-theme="dark"]) input::placeholder,
+		html:not([data-theme="dark"]) textarea::placeholder {
+			color: #756a6d;
+			opacity: 1;
+		}
+
+	/* Números dentro do indicador circular SVG */
+	html:not([data-theme="dark"]) .progress-ring text {
+		fill: #332d2f;
+	}
+
+	/* Telas com pouca altura */
+	@media (min-width: 992px) and (max-height: 850px) {
+		html:not([data-theme="dark"]) .content:has(.dashboard-data-grid) > .dashboard-grid {
+			flex-basis: 225px;
+		}
+	}
+
+
+	/* =====================================================
+   HERMENOS — CORREÇÃO DE CONTRASTE DO MODO CLARO
+   Colar no FINAL de site.css
+   ===================================================== */
+
+	html:not([data-theme="dark"]) {
+		--background: #e9e8e8;
+		--surface: #f0eeee;
+		--text: #342d30;
+		--muted: #62575a;
+		--subtle: #74686b;
+		--border: #d1cacc;
+		--border-strong: #bfb4b7;
+		--primary: #b95666;
+		--primary-dark: #963f4e;
+	}
+
+		/* Fundo geral */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background-color: #e9e8e8 !important;
+			color: #342d30 !important;
+		}
+
+		/* Cabeçalho superior */
+		html:not([data-theme="dark"]) .topbar {
+			background-color: #f0eeee !important;
+			color: #342d30 !important;
+			border-color: #d1cacc !important;
+		}
+
+		html:not([data-theme="dark"]) .breadcrumb-line,
+		html:not([data-theme="dark"]) .breadcrumb-line span,
+		html:not([data-theme="dark"]) .user-copy strong,
+		html:not([data-theme="dark"]) .competence-chip {
+			color: #342d30 !important;
+		}
+
+		/* Menu lateral — substituir o azul escuro por cinza */
+		html:not([data-theme="dark"]) .sidebar,
+		html:not([data-theme="dark"]) .app-sidebar {
+			background: #e2dfe0 !important;
+			color: #342d30 !important;
+			border-color: #cec7c9 !important;
+		}
+
+			html:not([data-theme="dark"]) .sidebar *,
+			html:not([data-theme="dark"]) .app-sidebar * {
+				--sidebar-text: #403538;
+			}
+
+			html:not([data-theme="dark"]) .sidebar-nav .nav-item,
+			html:not([data-theme="dark"]) .app-sidebar .nav-item,
+			html:not([data-theme="dark"]) .workspace-label {
+				color: #403538 !important;
+			}
+
+				html:not([data-theme="dark"]) .sidebar-nav .nav-item:hover,
+				html:not([data-theme="dark"]) .app-sidebar .nav-item:hover {
+					background: #d6cdd0 !important;
+					color: #963f4e !important;
+				}
+
+				html:not([data-theme="dark"]) .sidebar-nav .nav-item.active,
+				html:not([data-theme="dark"]) .app-sidebar .nav-item.active {
+					background: #b95666 !important;
+					color: #ffffff !important;
+				}
+
+		/* Corrigir títulos que continuam brancos */
+		html:not([data-theme="dark"]) .page-heading h1,
+		html:not([data-theme="dark"]) .page-heading h2,
+		html:not([data-theme="dark"]) .page-heading h3,
+		html:not([data-theme="dark"]) .page-heading,
+		html:not([data-theme="dark"]) .eyebrow,
+		html:not([data-theme="dark"]) .surface-heading h2,
+		html:not([data-theme="dark"]) .surface-heading h3 {
+			color: #342d30 !important;
+		}
+
+		html:not([data-theme="dark"]) .eyebrow {
+			color: #a44958 !important;
+		}
+
+		html:not([data-theme="dark"]) .page-heading p,
+		html:not([data-theme="dark"]) .surface-heading p {
+			color: #62575a !important;
+		}
+
+		/* Cartões e painéis: cinza, sem branco intenso */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .panel,
+		html:not([data-theme="dark"]) .filter-panel {
+			background: #f0eeee !important;
+			color: #342d30 !important;
+			border-color: #d1cacc !important;
+			box-shadow: 0 2px 5px rgba(45, 30, 34, 0.045) !important;
+		}
+
+			/* Números e descrições dos indicadores */
+			html:not([data-theme="dark"]) .metric-card *,
+			html:not([data-theme="dark"]) .overview-card *,
+			html:not([data-theme="dark"]) .metric-label,
+			html:not([data-theme="dark"]) .metric-content > strong {
+				color: #342d30 !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card small {
+				color: #62575a !important;
+			}
+
+			/* Indicadores com distinção discreta */
+			html:not([data-theme="dark"]) .metric-card:nth-child(1) {
+				background: #eeebeb !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(2) {
+				background: #ebede8 !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(3) {
+				background: #e9ecef !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4) {
+				background: #f0e7e8 !important;
+			}
+
+		/* Gráfico circular: números e legendas */
+		html:not([data-theme="dark"]) .reconciliation-chart,
+		html:not([data-theme="dark"]) .reconciliation-legend,
+		html:not([data-theme="dark"]) .reconciliation-legend small,
+		html:not([data-theme="dark"]) .chart-footnote {
+			color: #403538 !important;
+		}
+
+		html:not([data-theme="dark"]) .reconciliation-donut > div {
+			background: #f0eeee !important;
+			color: #342d30 !important;
+		}
+
+			html:not([data-theme="dark"]) .reconciliation-donut > div * {
+				color: #342d30 !important;
+			}
+
+		/* SVG: corrigir texto claro sem alterar as cores das fatias */
+		html:not([data-theme="dark"]) svg text {
+			fill: #342d30 !important;
+		}
+
+		/* Tabelas e cabeçalhos */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td {
+			background-color: #f0eeee !important;
+			color: #342d30 !important;
+			border-color: #d1cacc !important;
+		}
+
+			html:not([data-theme="dark"]) .data-table thead th {
+				background: #ded9da !important;
+				color: #403538 !important;
+				border-color: #cec7c9 !important;
+			}
+
+			html:not([data-theme="dark"]) .data-table tbody tr:hover {
+				background: #e6e1e2 !important;
+			}
+
+		/* Mensagens de estado vazio */
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .empty-state *,
+		html:not([data-theme="dark"]) .empty-state-content {
+			color: #403538 !important;
+		}
+
+		/* Links e destaques */
+		html:not([data-theme="dark"]) a {
+			color: #963f4e;
+		}
+
+		html:not([data-theme="dark"]) .primary-cell,
+		html:not([data-theme="dark"]) .data-table .primary-cell {
+			color: #a44958 !important;
+		}
+
+		/* Botões */
+		html:not([data-theme="dark"]) .btn-primary,
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background: #b95666 !important;
+			border-color: #b95666 !important;
+			color: #ffffff !important;
+		}
+
+		html:not([data-theme="dark"]) .theme-toggle,
+		html:not([data-theme="dark"]) .box-fullscreen-toggle {
+			background: #e9e6e7 !important;
+			border-color: #c9bfc2 !important;
+			color: #403538 !important;
+		}
+
+		/* Campos de formulário */
+		html:not([data-theme="dark"]) .form-control,
+		html:not([data-theme="dark"]) .form-select,
+		html:not([data-theme="dark"]) input,
+		html:not([data-theme="dark"]) select,
+		html:not([data-theme="dark"]) textarea {
+			background: #f0eeee !important;
+			color: #342d30 !important;
+			border-color: #c9bfc2 !important;
+		}
+
+			html:not([data-theme="dark"]) input::placeholder,
+			html:not([data-theme="dark"]) textarea::placeholder {
+				color: #74686b !important;
+				opacity: 1;
+			}
+
+		/* Preservar as cores semânticas de status */
+		html:not([data-theme="dark"]) .status-success {
+			background: #dcece1 !important;
+			color: #205e3d !important;
+		}
+
+		html:not([data-theme="dark"]) .status-warning {
+			background: #f2e7d4 !important;
+			color: #79501c !important;
+		}
+
+		html:not([data-theme="dark"]) .status-danger {
+			background: #f2dfe2 !important;
+			color: #963f4e !important;
+		}
+
+		html:not([data-theme="dark"]) .status-info {
+			background: #e0e7ef !important;
+			color: #355574 !important;
+		}
+
+
+	/* HERMENOS — modo claro com cinza mais presente */
+	html:not([data-theme="dark"]) {
+		--background: #e2e0e0;
+		--surface: #e9e7e7;
+		--text: #30292b;
+		--muted: #5c5255;
+		--border: #cbc5c7;
+	}
+
+		/* Fundo geral */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background-color: #e2e0e0 !important;
+		}
+
+		/* Barra superior e menu */
+		html:not([data-theme="dark"]) .topbar {
+			background-color: #e9e7e7 !important;
+		}
+
+		html:not([data-theme="dark"]) .sidebar,
+		html:not([data-theme="dark"]) .app-sidebar {
+			background-color: #d9d6d7 !important;
+		}
+
+		/* Cartões e painéis */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .panel,
+		html:not([data-theme="dark"]) .filter-panel,
+		html:not([data-theme="dark"]) .table-responsive {
+			background-color: #e9e7e7 !important;
+			border-color: #cbc5c7 !important;
+		}
+
+		/* Cabeçalhos de tabelas */
+		html:not([data-theme="dark"]) .data-table thead th {
+			background-color: #d8d3d4 !important;
+			color: #342d30 !important;
+		}
+
+		/* Corpo das tabelas */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td {
+			background-color: #e9e7e7 !important;
+			color: #342d30 !important;
+			border-color: #d0c9cb !important;
+		}
+
+		/* Gráfico: interior do círculo e textos */
+		html:not([data-theme="dark"]) .reconciliation-donut > div {
+			background-color: #e9e7e7 !important;
+			color: #30292b !important;
+		}
+
+			html:not([data-theme="dark"]) .reconciliation-donut > div *,
+			html:not([data-theme="dark"]) .chart-legend,
+			html:not([data-theme="dark"]) .chart-footnote {
+				color: #30292b !important;
+			}
+
+		/* Mensagens e estados vazios */
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .empty-state * {
+			color: #403538 !important;
+		}
+
+		/* Vermelho de destaque */
+		html:not([data-theme="dark"]) .sidebar-nav .nav-item.active,
+		html:not([data-theme="dark"]) .btn-primary,
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background-color: #b95666 !important;
+			border-color: #b95666 !important;
+			color: #ffffff !important;
+		}
+
+
+	/* HERMENOS — modo claro: eliminar o branco intenso */
+	html:not([data-theme="dark"]) {
+		--background: #d6d3d4;
+		--surface: #dedadb;
+		--text: #30292b;
+		--muted: #51474a;
+		--border: #bdb5b8;
+	}
+
+		/* Fundo da página */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background: #d6d3d4 !important;
+			color: #30292b !important;
+		}
+
+		/* Cabeçalho superior e navegação */
+		html:not([data-theme="dark"]) .topbar {
+			background: #dedadb !important;
+		}
+
+		html:not([data-theme="dark"]) .sidebar,
+		html:not([data-theme="dark"]) .app-sidebar {
+			background: #cfcbcd !important;
+		}
+
+		/* Todos os cartões e painéis */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .panel,
+		html:not([data-theme="dark"]) .filter-panel,
+		html:not([data-theme="dark"]) .filter-panel-wide,
+		html:not([data-theme="dark"]) .summary-strip,
+		html:not([data-theme="dark"]) .table-responsive {
+			background: #dedadb !important;
+			border-color: #bdb5b8 !important;
+			color: #30292b !important;
+		}
+
+		/* Áreas internas e estados vazios */
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .empty-state-content,
+		html:not([data-theme="dark"]) .chart-area,
+		html:not([data-theme="dark"]) .chart-container,
+		html:not([data-theme="dark"]) .chart-wrapper {
+			background: #d9d6d7 !important;
+			color: #30292b !important;
+		}
+
+		/* Tabelas */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td {
+			background: #dedadb !important;
+			color: #30292b !important;
+			border-color: #c9c2c4 !important;
+		}
+
+			html:not([data-theme="dark"]) .data-table thead th {
+				background: #c9c4c6 !important;
+				color: #30292b !important;
+			}
+
+		/* Textos e números que ainda aparecem claros */
+		html:not([data-theme="dark"]) .page-heading h1,
+		html:not([data-theme="dark"]) .surface-heading h2,
+		html:not([data-theme="dark"]) .metric-card *,
+		html:not([data-theme="dark"]) .chart-legend *,
+		html:not([data-theme="dark"]) .empty-state *,
+		html:not([data-theme="dark"]) .reconciliation-donut > div * {
+			color: #30292b !important;
+		}
+
+		/* Textos secundários */
+		html:not([data-theme="dark"]) .page-heading p,
+		html:not([data-theme="dark"]) .surface-heading p,
+		html:not([data-theme="dark"]) .metric-card small,
+		html:not([data-theme="dark"]) .chart-footnote {
+			color: #51474a !important;
+		}
+
+		/* Interior do gráfico circular */
+		html:not([data-theme="dark"]) .reconciliation-donut > div {
+			background: #dedadb !important;
+		}
+
+		/* Vermelho de identidade */
+		html:not([data-theme="dark"]) .sidebar-nav .nav-item.active,
+		html:not([data-theme="dark"]) .btn-primary,
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background: #b95666 !important;
+			border-color: #b95666 !important;
+			color: #ffffff !important;
+		}
+
+		/* Campos */
+		html:not([data-theme="dark"]) input,
+		html:not([data-theme="dark"]) select,
+		html:not([data-theme="dark"]) textarea,
+		html:not([data-theme="dark"]) .form-control,
+		html:not([data-theme="dark"]) .form-select {
+			background: #e2dfe0 !important;
+			color: #30292b !important;
+			border-color: #bdb5b8 !important;
+		}
+
+
+	/* ==========================================================
+   HERMENOS — INVERSÃO GLOBAL DE CORES
+   Modo claro: vermelho + cinza
+   Aplicação em todas as telas
+   ========================================================== */
+
+	html:not([data-theme="dark"]) {
+		color-scheme: light;
+		--background: #dcd9da;
+		--surface: #e7e3e4;
+		--text: #352b2e;
+		--muted: #625559;
+		--subtle: #786a6e;
+		--border: #c9bec1;
+		--border-strong: #b9a9ae;
+		/* Identidade vermelha */
+		--primary: #c56876;
+		--primary-dark: #ad4f5e;
+		/* Substituição dos tons azulados */
+		--navy: #d8cdd0;
+		--navy-soft: #e2d8da;
+		--info: #e8dadd;
+		--info-bg: #e8dadd;
+		--success-bg: #e0e9e2;
+		--warning-bg: #eee4d5;
+		--danger-bg: #f0dfe2;
+	}
+
+		/* Fundos principais em todas as páginas */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-shell,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background-color: #dcd9da !important;
+			color: #352b2e !important;
+		}
+
+		/* Barra superior */
+		html:not([data-theme="dark"]) .topbar {
+			background: #e7e3e4 !important;
+			color: #352b2e !important;
+			border-color: #c9bec1 !important;
+		}
+
+		/* Menu lateral: remove o azul escuro */
+		html:not([data-theme="dark"]) .sidebar,
+		html:not([data-theme="dark"]) .app-sidebar {
+			background: #d1cbcd !important;
+			border-color: #bfb4b7 !important;
+			color: #352b2e !important;
+		}
+
+			html:not([data-theme="dark"]) .sidebar-nav .nav-item,
+			html:not([data-theme="dark"]) .app-sidebar .nav-item,
+			html:not([data-theme="dark"]) .workspace-label {
+				color: #443639 !important;
+			}
+
+				/* Vermelho de navegação e ações */
+				html:not([data-theme="dark"]) .sidebar-nav .nav-item.active,
+				html:not([data-theme="dark"]) .app-sidebar .nav-item.active,
+				html:not([data-theme="dark"]) .btn-primary,
+				html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+					background: #c56876 !important;
+					border-color: #c56876 !important;
+					color: #ffffff !important;
+				}
+
+				html:not([data-theme="dark"]) .sidebar-nav .nav-item:hover,
+				html:not([data-theme="dark"]) .app-sidebar .nav-item:hover {
+					background: #e1d3d6 !important;
+					color: #963f4e !important;
+				}
+
+		/* Cartões, painéis e áreas de conteúdo */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .comparison-source,
+		html:not([data-theme="dark"]) .filter-panel,
+		html:not([data-theme="dark"]) .summary-strip,
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .panel,
+		html:not([data-theme="dark"]) .company-hero,
+		html:not([data-theme="dark"]) .empresa-cadastro-modal {
+			background: #e7e3e4 !important;
+			color: #352b2e !important;
+			border-color: #c9bec1 !important;
+		}
+
+			/* Cartões de indicadores: cinzas e vermelho suave */
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 1) {
+				background: #e7dfe1 !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 2) {
+				background: #e3e4df !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n + 3) {
+				background: #e0e1e3 !important;
+			}
+
+			html:not([data-theme="dark"]) .metric-card:nth-child(4n) {
+				background: #eadcde !important;
+			}
+
+		/* Cabeçalhos de painéis e tabelas */
+		html:not([data-theme="dark"]) .surface-heading,
+		html:not([data-theme="dark"]) .tab-pane-heading {
+			background: #ded8da !important;
+			border-color: #c9bec1 !important;
+			color: #352b2e !important;
+		}
+
+		html:not([data-theme="dark"]) .data-table thead th {
+			background: #d1c8cb !important;
+			color: #3b3033 !important;
+			border-color: #c1b6b9 !important;
+		}
+
+		/* Tabelas em todas as telas */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td {
+			background-color: #e7e3e4 !important;
+			color: #352b2e !important;
+			border-color: #d0c6c8 !important;
+		}
+
+			html:not([data-theme="dark"]) .data-table tbody tr:hover {
+				background: #ddd5d7 !important;
+			}
+
+		/* Barras de contexto, avisos e comparações */
+		html:not([data-theme="dark"]) .context-bar,
+		html:not([data-theme="dark"]) .info-banner {
+			background: #e5dadd !important;
+			border-color: #cdb9be !important;
+			color: #443438 !important;
+		}
+
+		html:not([data-theme="dark"]) .comparison-source dl > div,
+		html:not([data-theme="dark"]) .value-comparison > div {
+			background: #ded8da !important;
+			border-color: #c9bec1 !important;
+		}
+
+		/* Títulos e textos que ainda estavam brancos */
+		html:not([data-theme="dark"]) .page-heading,
+		html:not([data-theme="dark"]) .page-heading h1,
+		html:not([data-theme="dark"]) .page-heading h2,
+		html:not([data-theme="dark"]) .surface-heading h2,
+		html:not([data-theme="dark"]) .surface-heading h3,
+		html:not([data-theme="dark"]) .metric-label,
+		html:not([data-theme="dark"]) .metric-card strong,
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .empty-state *,
+		html:not([data-theme="dark"]) .context-copy,
+		html:not([data-theme="dark"]) .chart-legend,
+		html:not([data-theme="dark"]) .chart-footnote {
+			color: #352b2e !important;
+		}
+
+			html:not([data-theme="dark"]) .page-heading p,
+			html:not([data-theme="dark"]) .surface-heading p,
+			html:not([data-theme="dark"]) .metric-card small {
+				color: #625559 !important;
+			}
+
+		/* Links, títulos de empresas e destaques */
+		html:not([data-theme="dark"]) a,
+		html:not([data-theme="dark"]) .primary-cell,
+		html:not([data-theme="dark"]) .company-name,
+		html:not([data-theme="dark"]) .eyebrow {
+			color: #a44958 !important;
+		}
+
+		/* Botões secundários e controles */
+		html:not([data-theme="dark"]) .theme-toggle,
+		html:not([data-theme="dark"]) .box-fullscreen-toggle,
+		html:not([data-theme="dark"]) .btn-outline-primary,
+		html:not([data-theme="dark"]) .btn-outline-secondary {
+			background: #e2dcde !important;
+			border-color: #c4b5ba !important;
+			color: #49373b !important;
+		}
+
+		/* Formulários e campos de pesquisa */
+		html:not([data-theme="dark"]) input,
+		html:not([data-theme="dark"]) select,
+		html:not([data-theme="dark"]) textarea,
+		html:not([data-theme="dark"]) .form-control,
+		html:not([data-theme="dark"]) .form-select {
+			background: #e7e3e4 !important;
+			color: #352b2e !important;
+			border-color: #bfb4b7 !important;
+		}
+
+			html:not([data-theme="dark"]) input::placeholder,
+			html:not([data-theme="dark"]) textarea::placeholder {
+				color: #786a6e !important;
+				opacity: 1;
+			}
+
+		/* Status: preservar significado das cores */
+		html:not([data-theme="dark"]) .status-success {
+			background: #dce9df !important;
+			color: #245b3c !important;
+		}
+
+		html:not([data-theme="dark"]) .status-warning {
+			background: #eee2cd !important;
+			color: #79521d !important;
+		}
+
+		html:not([data-theme="dark"]) .status-danger {
+			background: #f0dce0 !important;
+			color: #963f4e !important;
+		}
+
+		html:not([data-theme="dark"]) .status-info {
+			background: #e2d9dc !important;
+			color: #65414a !important;
+		}
+
+
+	/* HERMENOS — paleta vermelha equivalente ao azul-petróleo */
+	html:not([data-theme="dark"]) {
+		--primary: #9F2639;
+		--primary-dark: #7F1D2D;
+		--background: #CECACB;
+		--surface: #DDD8D9;
+		--border: #B5AAAD;
+		--text: #302629;
+		--muted: #5A4A4F;
+	}
+
+		/* Azul-petróleo dos fundos transformado em vermelho profundo */
+		html:not([data-theme="dark"]) .sidebar,
+		html:not([data-theme="dark"]) .app-sidebar {
+			background: #D1C7C9 !important;
+			color: #302629 !important;
+		}
+
+		/* Barra superior e fundos principais em cinza */
+		html:not([data-theme="dark"]) body,
+		html:not([data-theme="dark"]) .app-main,
+		html:not([data-theme="dark"]) .content {
+			background: #CECACB !important;
+			color: #302629 !important;
+		}
+
+		html:not([data-theme="dark"]) .topbar {
+			background: #DDD8D9 !important;
+			color: #302629 !important;
+			border-color: #B5AAAD !important;
+		}
+
+		/* Cartões e painéis */
+		html:not([data-theme="dark"]) .surface,
+		html:not([data-theme="dark"]) .metric-card,
+		html:not([data-theme="dark"]) .overview-card,
+		html:not([data-theme="dark"]) .panel,
+		html:not([data-theme="dark"]) .filter-panel {
+			background: #DDD8D9 !important;
+			color: #302629 !important;
+			border-color: #B5AAAD !important;
+		}
+
+		/* Vermelho profundo nos destaques de todas as telas */
+		html:not([data-theme="dark"]) .sidebar-nav .nav-item.active,
+		html:not([data-theme="dark"]) .app-sidebar .nav-item.active,
+		html:not([data-theme="dark"]) .btn-primary,
+		html:not([data-theme="dark"]) .dashboard-chart-tabs .nav-link.active {
+			background: #9F2639 !important;
+			border-color: #9F2639 !important;
+			color: #FFFFFF !important;
+		}
+
+		/* Títulos, links e nomes em vermelho escuro */
+		html:not([data-theme="dark"]) .eyebrow,
+		html:not([data-theme="dark"]) .company-name,
+		html:not([data-theme="dark"]) .primary-cell,
+		html:not([data-theme="dark"]) a {
+			color: #8F2335 !important;
+		}
+
+		/* Cabeçalhos das tabelas em cinza mais escuro */
+		html:not([data-theme="dark"]) .data-table thead th {
+			background: #C6BDBF !important;
+			color: #302629 !important;
+		}
+
+		/* Texto legível em tabelas e áreas vazias */
+		html:not([data-theme="dark"]) .data-table,
+		html:not([data-theme="dark"]) .data-table tbody,
+		html:not([data-theme="dark"]) .data-table tr,
+		html:not([data-theme="dark"]) .data-table td,
+		html:not([data-theme="dark"]) .empty-state,
+		html:not([data-theme="dark"]) .empty-state * {
+			background-color: #DDD8D9 !important;
+			color: #302629 !important;
+			border-color: #C6BDBF !important;
+		}
+
+		/* Corrigir textos secundários */
+		html:not([data-theme="dark"]) .page-heading p,
+		html:not([data-theme="dark"]) .surface-heading p,
+		html:not([data-theme="dark"]) .metric-card small {
+			color: #5A4A4F !important;
+		}
+
+		/* Campos sem branco puro */
+		html:not([data-theme="dark"]) input,
+		html:not([data-theme="dark"]) select,
+		html:not([data-theme="dark"]) textarea,
+		html:not([data-theme="dark"]) .form-control,
+		html:not([data-theme="dark"]) .form-select {
+			background: #E2DEDF !important;
+			color: #302629 !important;
+			border-color: #B5AAAD !important;
+		}
+
 }

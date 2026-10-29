@@ -97,6 +97,9 @@
 		activePlaceholder.replaceWith(box);
 		activeBackdrop.remove();
 		box.classList.remove('box-modal-content');
+		if (box.id === 'cadastro-empresa-dialog') {
+			box.hidden = true;
+		}
 		activeBox = null;
 		activeBackdrop = null;
 		activePlaceholder = null;
@@ -118,7 +121,7 @@
 	const openBoxModal = (box, trigger) => {
 		if (!box) return;
 
-		// Se já existe um painel expandido, não o feche
+		// Se já existe um painel expandido, não fecha
 		// ao abrir a comparação.
 		const previousBox = activeBox;
 		const previousBackdrop = activeBackdrop;
@@ -155,6 +158,13 @@
 		closeButton.addEventListener('click', () => {
 			placeholder.replaceWith(box);
 			backdrop.remove();
+			placeholder.replaceWith(box);
+			backdrop.remove();
+			box.classList.remove('box-modal-content');
+
+			if (box.id === 'cadastro-empresa-dialog') {
+				box.hidden = true;
+			}
 			box.classList.remove('box-modal-content');
 			trigger?.setAttribute('aria-expanded', 'false');
 
@@ -226,4 +236,16 @@
 		if (event.key === 'Escape' && activeBox) closeBoxModal();
 	});
 	updateFullscreenButtons();
+
+	(() => {
+		const botaoAbrir = document.getElementById('abrir-cadastro-empresa');
+		const formulario = document.getElementById('cadastro-empresa-dialog');
+
+		if (botaoAbrir && formulario) {
+			botaoAbrir.addEventListener('click', () => {
+				formulario.hidden = false;
+				openBoxModal(formulario, botaoAbrir);
+			});
+		}
+	})();
 })();

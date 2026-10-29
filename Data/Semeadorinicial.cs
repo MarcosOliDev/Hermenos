@@ -12,7 +12,7 @@ public static class SemeadorInicial
 		if (!await db.Usuarios.AnyAsync())
 		{
 			db.Usuarios.AddRange(
-				new Usuario { Nome = "Mariana Costa", Email = "mariana.costa@hermenos.local", CriadoEm = agora },
+				new Usuario { Nome = "Marcos", Email = "marcos.costa@hermenos.local", CriadoEm = agora },
 				new Usuario { Nome = "Rafael Lima", Email = "rafael.lima@hermenos.local", CriadoEm = agora });
 		}
 
