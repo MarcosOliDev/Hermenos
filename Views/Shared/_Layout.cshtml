@@ -1,9 +1,18 @@
 @{
 	var controller = ViewContext.RouteData.Values["controller"]?.ToString();
 	var action = ViewContext.RouteData.Values["action"]?.ToString();
-	var secaoAtual = ViewData["Section"]?.ToString() ?? ViewData["Title"]?.ToString() ?? "Início";
+
+	var isAuthPage =
+		controller == "Conta" &&
+		(action == "Entrar" || action == "AlterarSenhaObrigatoria");
+
+	var secaoAtual = ViewData["Section"]?.ToString()
+		?? ViewData["Title"]?.ToString()
+		?? "Início";
+
 	var competencia = ViewData["Competencia"]?.ToString();
 }
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,99 +21,143 @@
 	<title>@ViewData["Title"] · HERMENOS</title>
 	<script>
 			try { document.documentElement.dataset.theme = localStorage.getItem('hermenos-theme') || 'dark'; } catch { document.documentElement.dataset.theme = 'dark'; }
+			try { if (localStorage.getItem('hermenos-sidebar') === 'closed') document.documentElement.classList.add('sidebar-closed'); } catch { /* menu aberto por padrão */ }
 	</script>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="icon" type="image/png" href="~/images/hermenos-simbolo.png" asp-append-version="true" />
 </head>
-<body class="@(controller == "Conciliacao" && action == "Importacoes" ? "import-screen" : "")">
-	<a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
-	<div class="app-shell">
-		<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="appSidebar" aria-labelledby="appSidebarLabel">
-			<div class="sidebar-head">
-				<a class="brand" asp-controller="Painel" asp-action="Index" id="appSidebarLabel" aria-label="HERMENOS, ir para o painel">
-					<img class="brand-mark" src="~/images/hermenos-simbolo.png" alt="" />
-					<span class="brand-copy">HERMENOS<small>Conciliação fiscal</small></span>
-				</a>
-				<button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Fechar menu"></button>
-			</div>
-
-			<div class="workspace-label">ESCRITÓRIO CONTÁBIL</div>
-			<nav class="sidebar-nav" aria-label="Navegação principal">
-				<a class="nav-item @(controller == "Painel" ? "active" : "")" asp-controller="Painel" asp-action="Index" aria-current="@(controller == "Painel" ? "page" : null)">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" /></svg>
-					<span>Painel geral</span>
-				</a>
-				<a class="nav-item @(controller == "Empresas" ? "active" : "")" asp-controller="Empresas" asp-action="Index" aria-current="@(controller == "Empresas" ? "page" : null)">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V3h10v4h6v14H4Zm3-3h2v-2H7v2Zm0-5h2v-2H7v2Zm0-5h2V6H7v2Zm5 10h2v-2h-2v2Zm0-5h2v-2h-2v2Zm0-5h2V6h-2v2Zm5 10h1v-2h-1v2Zm0-5h1v-2h-1v2Z" /></svg>
-					<span>Empresas</span>
-				</a>
-				<a class="nav-item @(controller == "Conciliacao" && action == "Index" ? "active" : "")" asp-controller="Conciliacao" asp-action="Index" aria-current="@(controller == "Conciliacao" && action == "Index" ? "page" : null)">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.4 18.4-4.8-4.8L6 12.2l3.4 3.4L18 7l1.4 1.4-10 10ZM5 5h8v2H5V5Zm0 4h6v2H5V9Z" /></svg>
-					<span>Conciliação</span>
-				</a>
-				<a class="nav-item @(action == "Divergencias" ? "active" : "")" asp-controller="Conciliacao" asp-action="Divergencias" aria-current="@(action == "Divergencias" ? "page" : null)">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v6h-2V7Zm0 8h2v2h-2v-2Zm1-13 10 19H2L12 2Zm0 4.2L5.3 19h13.4L12 6.2Z" /></svg>
-					<span>Divergências</span>
-				</a>
-				<a class="nav-item @(action == "Importacoes" ? "active" : "")" asp-controller="Conciliacao" asp-action="Importacoes" aria-current="@(action == "Importacoes" ? "page" : null)">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15V5.8L8.4 8.4 7 7l5-5 5 5-1.4 1.4L13 5.8V15h-2Zm-6 6v-7h2v5h10v-5h2v7H5Z" /></svg>
-					<span>Importações</span>
-				</a>
-			</nav>
-
-			<div class="sidebar-note">
-				<span class="status-dot" aria-hidden="true"></span>
-				<span><strong>Ambiente de desenvolvimento</strong><small>Dados vindos dos arquivos importados</small></span>
-			</div>
-		</aside>
-
-		<div class="app-main">
-			<header class="topbar">
-				<div class="topbar-start">
-					<button class="sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar" aria-label="Abrir menu">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z" /></svg>
-					</button>
-					<nav class="breadcrumb-line" aria-label="Navegação estrutural">
-						<a asp-controller="Painel" asp-action="Index">HERMENOS</a>
-						<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6-1.4-1.4 4.6-4.6-4.6-4.6L7.5 4Z" /></svg>
-						<span aria-current="page">@secaoAtual</span>
-					</nav>
+<body class="@(isAuthPage ? "auth-layout" : controller == "Conciliacao" && action == "Importacoes" ? "import-screen" : "")">
+	@if (!isAuthPage)
+	{
+		<a class="skip-link" href="#conteudo-principal">
+			Pular para o conteúdo
+		</a>
+	}
+	@if (isAuthPage)
+	{
+		<main class="auth-page" id="conteudo-principal" tabindex="-1">
+			@RenderBody()
+		</main>
+	}
+	else
+	{
+		<div class="app-shell">
+			<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="appSidebar" aria-labelledby="appSidebarLabel">
+				<div class="sidebar-head">
+					<a class="brand" asp-controller="Painel" asp-action="Index" id="appSidebarLabel" aria-label="HERMENOS, ir para o painel">
+						<img class="brand-mark" src="~/images/hermenos-simbolo.png" alt="" />
+						<span class="brand-copy">HERMENOS<small>Conciliação fiscal</small></span>
+					</a>
+					<button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Fechar menu"></button>
 				</div>
-				<div class="topbar-actions">
-					<button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo noturno" title="Ativar modo noturno">
-						<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-6a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 16a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1ZM4.22 4.22a1 1 0 0 1 1.42 0l1.41 1.41a1 1 0 0 1-1.42 1.42L4.22 5.64a1 1 0 0 1 0-1.42Zm12.73 12.73a1 1 0 0 1 1.42 0l1.41 1.41a1 1 0 0 1-1.42 1.42l-1.41-1.41a1 1 0 0 1 0-1.42ZM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm16 0a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1ZM4.22 19.78a1 1 0 0 1 0-1.42l1.41-1.41a1 1 0 0 1 1.42 1.42l-1.41 1.41a1 1 0 0 1-1.42 0Zm12.73-12.73a1 1 0 0 1 0-1.42l1.41-1.41a1 1 0 1 1 1.42 1.42l-1.41 1.41a1 1 0 0 1-1.42 0Z" /></svg>
-						<svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.1 15.2A8.5 8.5 0 0 1 8.8 3.9 8.5 8.5 0 1 0 20.1 15.2Z" /></svg>
-						<span class="theme-toggle-label">Modo noturno</span>
-					</button>
-					@if (!string.IsNullOrWhiteSpace(competencia))
+
+				<div class="workspace-label">ESCRITÓRIO CONTÁBIL</div>
+				<nav class="sidebar-nav" aria-label="Navegação principal">
+					<a class="nav-item @(controller == "Painel" ? "active" : "")" asp-controller="Painel" asp-action="Index" aria-current="@(controller == "Painel" ? "page" : null)">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" /></svg>
+						<span>Painel geral</span>
+					</a>
+					@if (User.IsInRole(Perfis.Admin) || User.IsInRole(Perfis.Gerente) || User.IsInRole(Perfis.ContadorSenior) || User.IsInRole(Perfis.ContadorPleno))
 					{
-						<div class="competence-chip">
-							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2Zm11 9H6v9h12v-9ZM6 9h12V6H6v3Z" /></svg>
-							<span>Competência<strong>@competencia</strong></span>
-						</div>
+						<a class="nav-item @(controller == "Empresas" ? "active" : "")" asp-controller="Empresas" asp-action="Index" aria-current="@(controller == "Empresas" ? "page" : null)">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V3h10v4h6v14H4Zm3-3h2v-2H7v2Zm0-5h2v-2H7v2Zm0-5h2V6H7v2Zm5 10h2v-2h-2v2Zm0-5h2v-2h-2v2Zm0-5h2V6h-2v2Zm5 10h1v-2h-1v2Zm0-5h1v-2h-1v2Z" /></svg>
+							<span>Empresas</span>
+						</a>
 					}
-					<div class="user-menu">
-						<span class="avatar" aria-hidden="true">MO</span>
-						<span class="user-copy"><strong>Marcos Oliveira</strong><small>Escritório contábil</small></span>
-					</div>
-				</div>
-			</header>
+					<a class="nav-item @(controller == "Conciliacao" && action == "Index" ? "active" : "")" asp-controller="Conciliacao" asp-action="Index" aria-current="@(controller == "Conciliacao" && action == "Index" ? "page" : null)">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.4 18.4-4.8-4.8L6 12.2l3.4 3.4L18 7l1.4 1.4-10 10ZM5 5h8v2H5V5Zm0 4h6v2H5V9Z" /></svg>
+						<span>Conciliação</span>
+					</a>
+					<a class="nav-item @(action == "Divergencias" ? "active" : "")" asp-controller="Conciliacao" asp-action="Divergencias" aria-current="@(action == "Divergencias" ? "page" : null)">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v6h-2V7Zm0 8h2v2h-2v-2Zm1-13 10 19H2L12 2Zm0 4.2L5.3 19h13.4L12 6.2Z" /></svg>
+						<span>Divergências</span>
+					</a>
+					@if (User.IsInRole(Perfis.Admin) || User.IsInRole(Perfis.Gerente) || User.IsInRole(Perfis.ContadorSenior) || User.IsInRole(Perfis.ContadorPleno))
+					{
+						<a class="nav-item @(action == "Importacoes" ? "active" : "")" asp-controller="Conciliacao" asp-action="Importacoes" aria-current="@(action == "Importacoes" ? "page" : null)">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15V5.8L8.4 8.4 7 7l5-5 5 5-1.4 1.4L13 5.8V15h-2Zm-6 6v-7h2v5h10v-5h2v7H5Z" /></svg>
+							<span>Importações</span>
+						</a>
+					}
+					@if (User.Identity?.IsAuthenticated == true && Perfis.EhGestao(User.ObterPerfil()))
+					{
+						<a class="nav-item @(controller == "Equipe" ? "active" : "")" asp-controller="Equipe" asp-action="Index" aria-current="@(controller == "Equipe" ? "page" : null)">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13Zm8 0c-.3 0-.6 0-1 .1 1.2.9 2 2 2 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5Z" /></svg>
+							<span>Equipe</span>
+						</a>
+					}
+				</nav>
 
-			<main class="content" id="conteudo-principal" tabindex="-1">
-				@RenderBody()
-			</main>
-			<footer class="app-footer">
-				<span>HERMENOS · Conciliação e monitoramento fiscal</span>
-				<span>Ambiente de desenvolvimento</span>
-			</footer>
+				<div class="sidebar-note">
+					<span class="status-dot" aria-hidden="true"></span>
+					<span><strong>Ambiente de desenvolvimento</strong><small>Dados vindos dos arquivos importados</small></span>
+				</div>
+			</aside>
+
+			<div class="app-main">
+				<header class="topbar">
+					<div class="topbar-start">
+						<button class="sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar" aria-label="Abrir menu">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z" /></svg>
+						</button>
+						<button class="sidebar-toggle sidebar-collapse-toggle d-none d-lg-grid" type="button" id="sidebarCollapse" aria-controls="appSidebar" aria-expanded="true" aria-label="Fechar menu lateral" title="Fechar menu lateral">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M3 4h18v16H3V4Zm2 2v12h4V6H5Zm6 0v12h8V6h-8Z" /></svg>
+						</button>
+						<nav class="breadcrumb-line" aria-label="Navegação estrutural">
+							<a asp-controller="Painel" asp-action="Index">HERMENOS</a>
+							<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6-1.4-1.4 4.6-4.6-4.6-4.6L7.5 4Z" /></svg>
+							<span aria-current="page">@secaoAtual</span>
+						</nav>
+					</div>
+					<div class="topbar-actions">
+						<button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo noturno" title="Ativar modo noturno">
+							<svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-6a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 16a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1ZM4.22 4.22a1 1 0 0 1 1.42 0l1.41 1.41a1 1 0 0 1-1.42 1.42L4.22 5.64a1 1 0 0 1 0-1.42Zm12.73 12.73a1 1 0 0 1 1.42 0l1.41 1.41a1 1 0 0 1-1.42 1.42l-1.41-1.41a1 1 0 0 1 0-1.42ZM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm16 0a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1ZM4.22 19.78a1 1 0 0 1 0-1.42l1.41-1.41a1 1 0 0 1 1.42 1.42l-1.41 1.41a1 1 0 0 1-1.42 0Zm12.73-12.73a1 1 0 0 1 0-1.42l1.41-1.41a1 1 0 1 1 1.42 1.42l-1.41 1.41a1 1 0 0 1-1.42 0Z" /></svg>
+							<svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.1 15.2A8.5 8.5 0 0 1 8.8 3.9 8.5 8.5 0 1 0 20.1 15.2Z" /></svg>
+							<span class="theme-toggle-label">Modo noturno</span>
+						</button>
+						@if (!string.IsNullOrWhiteSpace(competencia))
+						{
+							<div class="competence-chip">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2Zm11 9H6v9h12v-9ZM6 9h12V6H6v3Z" /></svg>
+								<span>Competência<strong>@competencia</strong></span>
+							</div>
+						}
+						@if (User.Identity?.IsAuthenticated == true)
+						{
+							var nomeUsuarioLogado = User.Identity.Name ?? "Usuário";
+							var fotoUsuario = User.FindFirst("FotoPerfil")?.Value;
+							<div class="user-menu">
+								@if (!string.IsNullOrWhiteSpace(fotoUsuario))
+								{
+									<img class="avatar" src="@fotoUsuario" alt="Foto de perfil" style="object-fit:cover" />
+								}
+								else
+								{
+
+									<span class="avatar" aria-hidden="true">@nomeUsuarioLogado.Substring(0, 1).ToUpperInvariant()</span>
+								}
+								<span class="user-copy"><strong>@nomeUsuarioLogado</strong><small>@Perfis.Rotulo(User.ObterPerfil())</small></span>
+								<a asp-controller="Conta" asp-action="Perfil" class="btn btn-sm btn-outline-secondary">Perfil</a>
+								<form asp-controller="Conta" asp-action="Sair" method="post"><button type="submit" class="btn btn-sm btn-outline-secondary">Sair</button></form>
+							</div>
+						}
+					</div>
+				</header>
+
+				<main class="content" id="conteudo-principal" tabindex="-1">
+					@RenderBody()
+				</main>
+				<footer class="app-footer">
+					<span>HERMENOS · Conciliação e monitoramento fiscal</span>
+					<span>Ambiente de desenvolvimento</span>
+				</footer>
+			</div>
 		</div>
-	</div>
+	}
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="~/js/painel.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-

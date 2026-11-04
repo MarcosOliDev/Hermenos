@@ -1,0 +1,73 @@
+@model CadastroEquipeViewModel
+
+@{
+	ViewData["Title"] = "Novo funcionário";
+	ViewData["Section"] = "Equipe";
+}
+
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">NOVO MEMBRO</span>
+		<h1>Cadastrar funcionário</h1>
+		<p>O nome de usuário e a senha temporária são gerados ao salvar.</p>
+	</div>
+	<a class="btn btn-outline-secondary" asp-action="Index">Voltar para a equipe</a>
+</div>
+
+<section class="surface">
+	<div class="surface-body surface-body-spaced">
+		<form asp-action="Create" method="post" enctype="multipart/form-data" class="form-stack">
+			<div asp-validation-summary="ModelOnly" class="notice notice-danger"></div>
+
+			<div class="form-grid-2">
+				<div class="filter-field">
+					<label asp-for="Nome">Nome</label>
+					<input asp-for="Nome" class="form-control" maxlength="100" placeholder="Ex.: Mariana Costa" autofocus />
+					<span asp-validation-for="Nome" class="field-error"></span>
+				</div>
+
+				<div class="filter-field">
+					<label asp-for="Email">E-mail</label>
+					<input asp-for="Email" class="form-control" autocomplete="off" placeholder="nome@hermenos.local" />
+					<span asp-validation-for="Email" class="field-error"></span>
+				</div>
+			</div>
+
+			<div class="form-grid-2">
+				@if (Model.PerfisPermitidos.Count > 1)
+				{
+					<div class="filter-field">
+						<label asp-for="Perfil">Perfil</label>
+						<select asp-for="Perfil" class="form-select">
+							@foreach (var perfil in Model.PerfisPermitidos)
+							{
+								<option value="@perfil">@Perfis.Rotulo(perfil)</option>
+							}
+						</select>
+						<span asp-validation-for="Perfil" class="field-error"></span>
+					</div>
+				}
+				else
+				{
+					<input type="hidden" asp-for="Perfil" />
+				}
+
+				<div class="filter-field">
+					<label for="foto">Foto de perfil <span class="field-optional">(opcional)</span></label>
+					<input type="file" id="foto" name="foto" class="form-control"
+						   accept="image/png,image/jpeg,image/webp" />
+					<small class="field-hint">JPG, PNG ou WEBP, até 2 MB.</small>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary">Cadastrar</button>
+				<a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+			</div>
+		</form>
+	</div>
+</section>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

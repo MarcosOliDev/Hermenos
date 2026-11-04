@@ -1,0 +1,32 @@
+﻿@{
+	var logado = User.Identity?.IsAuthenticated == true;
+	var nome = User.Identity?.Name ?? "";
+	var inicial = nome.Length > 0 ? nome.Substring(0, 1).ToUpperInvariant() : "?";
+}
+
+@if (logado && Perfis.EhEquipe(User.ObterPerfil()))
+{
+	<div class="atalhos-equipe">
+		<a asp-controller="Produto" asp-action="Index" class="atalho-equipe">Central da Loja</a>
+
+		@if (Perfis.EhGestao(User.ObterPerfil()))
+		{
+			<a asp-controller="Equipe" asp-action="Index" class="atalho-equipe">Equipe</a>
+		}
+	</div>
+}
+
+@if (logado)
+{
+	<div class="info-login" title="@nome">
+		<span class="menu-avatar info-login-avatar">@inicial</span>
+		<div class="info-login-texto">
+			<strong>@nome</strong>
+			<small>@Perfis.Rotulo(User.ObterPerfil())</small>
+		</div>
+	</div>
+}
+else
+{
+	<a asp-controller="Conta" asp-action="Entrar" class="info-login-entrar">Entrar</a>
+}

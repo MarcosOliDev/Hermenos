@@ -1,0 +1,107 @@
+@model EntrarViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-heading">
+        <span class="eyebrow">HERMENOS · CONCILIAÇÃO FISCAL</span>
+        <h1>Login</h1>
+        <p>Acesse sua conta para continuar.</p>
+    </div>
+
+    <form asp-controller="Conta"
+          asp-action="Entrar"
+          method="post"
+          class="auth-form">
+
+        <input type="hidden"
+               name="returnUrl"
+               value="@ViewData["ReturnUrl"]" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="auth-validation"></div>
+
+        <div class="auth-field">
+            <label asp-for="Nome">Seu login</label>
+
+            <div class="auth-input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4Z" />
+                </svg>
+
+                <input asp-for="Nome"
+                       placeholder="Nome de usuário ou e-mail"
+                       autocomplete="username"
+                       autofocus />
+            </div>
+
+            <span asp-validation-for="Nome"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-field">
+            <label asp-for="Senha">Sua senha</label>
+
+            <div class="auth-input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9h14v-9a2 2 0 0 0-2-2ZM10 7a2 2 0 1 1 4 0v2h-4V7Zm3 9.7V18h-2v-1.3a2 2 0 1 1 2 0Z" />
+                </svg>
+
+                <input asp-for="Senha"
+                       type="password"
+                       id="campoSenha"
+                       placeholder="Digite sua senha"
+                       autocomplete="current-password" />
+
+                <button type="button"
+                        class="auth-password-toggle"
+                        id="alternarSenha"
+                        aria-label="Mostrar senha">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5c-5 0-9.3 3.1-11 7 1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    </svg>
+                </button>
+            </div>
+
+            <span asp-validation-for="Senha"
+                  class="auth-validation"></span>
+        </div>
+
+        <div class="auth-options">
+            <label class="auth-remember">
+                <input asp-for="Lembrar" />
+                <span>Manter conectado</span>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit">
+            Entrar no HERMENOS
+        </button>
+
+        <p class="auth-terms">
+            Acesso restrito a usuários autorizados.
+            <br />
+            HERMENOS · Conciliação e monitoramento fiscal
+        </p>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById("alternarSenha")?.addEventListener("click", function() {
+            const campo = document.getElementById("campoSenha");
+            const mostrar = campo.type === "password";
+
+            campo.type = mostrar ? "text" : "password";
+            this.setAttribute(
+                "aria-label",
+                mostrar ? "Ocultar senha" : "Mostrar senha"
+            );
+        });
+    </script>
+}

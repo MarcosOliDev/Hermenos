@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Acesso negado";
+    ViewData["Section"] = "Acesso negado";
+}
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">PERMISSÃO</span>
+        <h1>Acesso negado</h1>
+        <p>Seu perfil não tem autorização para abrir esta página.</p>
+    </div>
+</div>
+
+<section class="surface">
+    <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">!</span>
+        <h3>Você não tem permissão para acessar esta página</h3>
+        <p>Se você precisa deste acesso, solicite a liberação a um gestor da equipe.</p>
+        <a class="btn btn-outline-primary btn-sm" asp-controller="Painel" asp-action="Index">Voltar ao painel</a>
+    </div>
+</section>

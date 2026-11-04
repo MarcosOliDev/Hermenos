@@ -1,0 +1,62 @@
+﻿@model PrimeiroAcessoSenhaViewModel
+
+@{
+	ViewData["Title"] = "Primeiro acesso";
+	Layout = "_Layout";
+}
+
+<div class="auth-container">
+	<div class="auth-heading">
+		<span class="eyebrow">PRIMEIRO ACESSO</span>
+		<h1>Defina sua senha</h1>
+		<p>
+			Sua conta foi criada com uma senha temporária.
+			Para continuar utilizando o HERMENOS, defina uma nova senha.
+		</p>
+	</div>
+
+	<form asp-action="AlterarSenhaObrigatoria" method="post" class="auth-form">
+		<div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+		<div class="auth-field">
+			<label asp-for="NovaSenha">Nova senha</label>
+			<div class="auth-input-wrap">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9h14v-9a2 2 0 0 0-2-2ZM10 7a2 2 0 1 1 4 0v2h-4V7Zm3 9.7V18h-2v-1.3a2 2 0 1 1 2 0Z" />
+				</svg>
+				<input asp-for="NovaSenha"
+					   type="password"
+					   placeholder="Mínimo de 8 caracteres"
+					   autocomplete="new-password"
+					   autofocus />
+			</div>
+			<span asp-validation-for="NovaSenha" class="auth-validation"></span>
+		</div>
+
+		<div class="auth-field">
+			<label asp-for="ConfirmarNovaSenha">Confirmar nova senha</label>
+			<div class="auth-input-wrap">
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9h14v-9a2 2 0 0 0-2-2ZM10 7a2 2 0 1 1 4 0v2h-4V7Zm3 9.7V18h-2v-1.3a2 2 0 1 1 2 0Z" />
+				</svg>
+				<input asp-for="ConfirmarNovaSenha"
+					   type="password"
+					   placeholder="Repita a nova senha"
+					   autocomplete="new-password" />
+			</div>
+			<span asp-validation-for="ConfirmarNovaSenha" class="auth-validation"></span>
+		</div>
+
+		<button type="submit" class="btn btn-primary auth-submit">
+			Alterar senha e continuar
+		</button>
+
+		<p class="auth-terms">
+			HERMENOS · Conciliação e monitoramento fiscal
+		</p>
+	</form>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

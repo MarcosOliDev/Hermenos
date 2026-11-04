@@ -249,3 +249,23 @@
 		}
 	})();
 })();
+
+// Abre e fecha o menu lateral no desktop e lembra a escolha.
+(() => {
+	const botao = document.getElementById('sidebarCollapse');
+	if (!botao) return;
+	const raiz = document.documentElement;
+	const atualizar = () => {
+		const fechado = raiz.classList.contains('sidebar-closed');
+		const texto = fechado ? 'Abrir menu lateral' : 'Fechar menu lateral';
+		botao.setAttribute('aria-expanded', String(!fechado));
+		botao.setAttribute('aria-label', texto);
+		botao.setAttribute('title', texto);
+	};
+	botao.addEventListener('click', () => {
+		raiz.classList.toggle('sidebar-closed');
+		try { localStorage.setItem('hermenos-sidebar', raiz.classList.contains('sidebar-closed') ? 'closed' : 'open'); } catch { /* vale só nesta página */ }
+		atualizar();
+	});
+	atualizar();
+})();

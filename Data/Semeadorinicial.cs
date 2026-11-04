@@ -1,5 +1,6 @@
 ﻿using Hermenos.Enums;
 using Hermenos.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hermenos.Data;
@@ -9,11 +10,20 @@ public static class SemeadorInicial
 	public static async Task SemearAsync(HermenosDbContext db)
 	{
 		var agora = DateTimeOffset.UtcNow;
-		if (!await db.Usuarios.AnyAsync())
+		if (!await db.Usuarios.AnyAsync(u => u.Perfil == Perfis.Admin))
 		{
-			db.Usuarios.AddRange(
-				new Usuario { Nome = "Marcos", Email = "marcos.costa@hermenos.local", CriadoEm = agora },
-				new Usuario { Nome = "Rafael Lima", Email = "rafael.lima@hermenos.local", CriadoEm = agora });
+			var admin = new Usuario
+			{
+				Nome = "Administrador HERMENOS",
+				Email = "admin@hermenos.local",
+				NomeUsuario = "admin.hermenos",
+				Perfil = Perfis.Admin,
+				Ativo = true,
+				DataCadastro = DateTime.UtcNow,
+				CriadoEm = agora
+			};
+			admin.SenhaHash = new PasswordHasher<Usuario>().HashPassword(admin, "Hermenos@2026");
+			db.Usuarios.Add(admin);
 		}
 
 		if (!await db.Empresas.AnyAsync())
@@ -28,16 +38,8 @@ public static class SemeadorInicial
 				["Restaurante Sabor & Arte", "56.789.012/0001-34"]
 			];
 			foreach (var empresa in empresas)
-				db.Empresas.Add(new Empresa
-				{
-					Nome = empresa[0],
-					Cnpj = empresa[1],
-					DataInscricaoEmpresa = inscricao,
-					Status = StatusEmpresa.Ativa,
-					CriadoEm = agora
-				});
+				db.Empresas.Add(new Empresa { Nome = empresa[0], Cnpj = empresa[1], DataInscricaoEmpresa = inscricao, Status = StatusEmpresa.Ativa, CriadoEm = agora });
 		}
-
 		await db.SaveChangesAsync();
 	}
 }

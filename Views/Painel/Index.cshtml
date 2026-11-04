@@ -73,61 +73,81 @@
 <div class="dashboard-grid">
 	<section class="surface mb-0">
 		<div class="surface-heading">
-			<div><h2>Análise da carteira</h2><p>Indicadores relevantes para priorizar o trabalho fiscal.</p></div>
+			<div><h2 class="heading-icon heading-icon-chart">Análise da carteira</h2><p>Indicadores relevantes para priorizar o trabalho fiscal.</p></div>
 			<a class="link-action" asp-controller="Conciliacao" asp-action="Divergencias">Ver divergências <span aria-hidden="true">→</span></a>
 		</div>
 		<div class="dashboard-chart-tabs nav nav-pills" role="tablist" aria-label="Gráficos principais">
-	<button class="nav-link active" id="tab-conciliacao" data-bs-toggle="pill" data-bs-target="#grafico-conciliacao" type="button" role="tab" aria-controls="grafico-conciliacao" aria-selected="true">Situação</button>
-	<button class="nav-link" id="tab-evolucao" data-bs-toggle="pill" data-bs-target="#grafico-evolucao" type="button" role="tab" aria-controls="grafico-evolucao" aria-selected="false">Evolução</button>
-	<button class="nav-link" id="tab-empresas-abertas" data-bs-toggle="pill" data-bs-target="#grafico-empresas-abertas" type="button" role="tab" aria-controls="grafico-empresas-abertas" aria-selected="false">Empresas com divergências</button>
-	<button class="nav-link" id="tab-divergencias" data-bs-toggle="pill" data-bs-target="#grafico-divergencias" type="button" role="tab" aria-controls="grafico-divergencias" aria-selected="false">Por categoria</button>
-</div>
-<div class="tab-content dashboard-chart-content">
-	<div class="tab-pane fade show active" id="grafico-conciliacao" role="tabpanel" aria-labelledby="tab-conciliacao" tabindex="0">
-		<div class="reconciliation-chart">
-			<div class="reconciliation-donut" role="img" aria-label="Distribuição dos documentos: @string.Join(", ", Model.SituacoesDocumentos.Select(x => $"{x.Quantidade} {x.Nome}"))" style="@percentualSituacoes">
-				<div><strong>@Model.SituacoesDocumentos.Sum(x => x.Quantidade)</strong><span>documentos</span></div>
+			<button class="nav-link active" id="tab-conciliacao" data-bs-toggle="pill" data-bs-target="#grafico-conciliacao" type="button" role="tab" aria-controls="grafico-conciliacao" aria-selected="true">Situação</button>
+			<button class="nav-link" id="tab-evolucao" data-bs-toggle="pill" data-bs-target="#grafico-evolucao" type="button" role="tab" aria-controls="grafico-evolucao" aria-selected="false">Evolução</button>
+			<button class="nav-link" id="tab-empresas-abertas" data-bs-toggle="pill" data-bs-target="#grafico-empresas-abertas" type="button" role="tab" aria-controls="grafico-empresas-abertas" aria-selected="false">Empresas com divergências</button>
+			<button class="nav-link" id="tab-divergencias" data-bs-toggle="pill" data-bs-target="#grafico-divergencias" type="button" role="tab" aria-controls="grafico-divergencias" aria-selected="false">Por categoria</button>
+		</div>
+		<div class="tab-content dashboard-chart-content">
+			<div class="tab-pane fade show active" id="grafico-conciliacao" role="tabpanel" aria-labelledby="tab-conciliacao" tabindex="0">
+				<div class="reconciliation-chart">
+					<div class="reconciliation-donut" role="img" aria-label="Distribuição dos documentos: @string.Join(", ", Model.SituacoesDocumentos.Select(x => $"{x.Quantidade} {x.Nome}"))" style="@percentualSituacoes">
+						<div><strong>@Model.SituacoesDocumentos.Sum(x => x.Quantidade)</strong><span>documentos</span></div>
+					</div>
+					<div class="reconciliation-legend">
+						@foreach (var situacaoDocumento in Model.SituacoesDocumentos)
+						{
+							<div><span class="legend-swatch" style="background:@situacaoDocumento.Cor"></span><span>@situacaoDocumento.Nome</span><strong>@situacaoDocumento.Quantidade</strong></div>
+						}
+						<small>Distribuição da competência selecionada</small>
+					</div>
+					@if (Model.DocumentosPendentes + Model.DocumentosDivergentes > 0)
+					{
+						<div class="attention-panel">
+							<svg class="attention-art" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="44" class="art-bg" /><path class="art-doc" d="M32 20h24l12 12v44H32V20Z" /><path class="art-fold" d="M56 20v12h12" /><circle cx="64" cy="66" r="13" class="art-badge" /><path class="art-mark" d="M63 59h2v9h-2v-9Zm0 11h2v2h-2v-2Z" /></svg>
+							<div>
+								<strong>Atenção necessária</strong>
+								<p>Existem @(Model.DocumentosPendentes + Model.DocumentosDivergentes) documentos sem conciliação ou com divergências.</p>
+								<a class="btn btn-primary btn-sm" asp-controller="Conciliacao" asp-action="Divergencias">Ver detalhes <span aria-hidden="true">→</span></a>
+							</div>
+						</div>
+					}
+				</div>
 			</div>
-			<div class="reconciliation-legend">
-				@foreach (var situacaoDocumento in Model.SituacoesDocumentos)
+			<div class="tab-pane fade" id="grafico-evolucao" role="tabpanel" aria-labelledby="tab-evolucao" tabindex="0">
+				<div class="evolution-chart">
+					<svg viewBox="0 0 400 132" role="img" aria-label="Evolução semanal de documentos conciliados e divergentes">
+						<path class="evolution-gridline" d="M20 22H380 M20 67H380 M20 112H380" />
+						<polyline class="evolution-line evolution-line-ok" points="@pontosConciliados" />
+						<polyline class="evolution-line evolution-line-alert" points="@pontosDivergentes" />
+					</svg>
+					<div class="evolution-labels">@foreach (var periodo in Model.EvolucaoConciliacao) {
+						<span>@periodo.Periodo</span>
+					}
+				</div>
+				<div class="evolution-legend"><span><i class="legend-ok"></i>Conciliados</span><span><i class="legend-attention"></i>Divergentes</span><small>Documentos agrupados pela data de emissão</small></div>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="grafico-empresas-abertas" role="tabpanel" aria-labelledby="tab-empresas-abertas" tabindex="0">
+			<div class="chart-list">
+				@foreach (var empresa in Model.EmpresasComDivergencias)
 				{
-					<div><span class="legend-swatch" style="background:@situacaoDocumento.Cor"></span><span>@situacaoDocumento.Nome</span><strong>@situacaoDocumento.Quantidade</strong></div>
+					var percentual = empresa.Quantidade * 100 / Math.Max(1, Model.EmpresasComDivergencias.Max(x => x.Quantidade));
+					<div class="chart-item"><div><span>@empresa.Nome</span><strong>@empresa.Quantidade</strong></div><div class="bar-track"><div class="bar c2" data-barra="@percentual"></div></div></div>
 				}
-				<small>Distribuição da competência selecionada</small>
+				@if (Model.EmpresasComDivergencias.Count == 0)
+				{
+					<div class="chart-empty">Não há divergências em aberto.</div>
+				}
 			</div>
 		</div>
-	</div>
-	<div class="tab-pane fade" id="grafico-evolucao" role="tabpanel" aria-labelledby="tab-evolucao" tabindex="0">
-		<div class="evolution-chart">
-			<svg viewBox="0 0 400 132" role="img" aria-label="Evolução semanal de documentos conciliados e divergentes">
-				<path class="evolution-gridline" d="M20 22H380 M20 67H380 M20 112H380" />
-				<polyline class="evolution-line evolution-line-ok" points="@pontosConciliados" />
-				<polyline class="evolution-line evolution-line-alert" points="@pontosDivergentes" />
-			</svg>
-			<div class="evolution-labels">@foreach (var periodo in Model.EvolucaoConciliacao) { <span>@periodo.Periodo</span> }</div>
-			<div class="evolution-legend"><span><i class="legend-ok"></i>Conciliados</span><span><i class="legend-attention"></i>Divergentes</span><small>Documentos agrupados pela data de emissão</small></div>
+		<div class="tab-pane fade" id="grafico-divergencias" role="tabpanel" aria-labelledby="tab-divergencias" tabindex="0">
+			<div class="chart-list">
+				@foreach (var categoria in Model.Categorias)
+				{
+					var percentual = Math.Max(8, categoria.Quantidade * 100 / Model.MaiorCategoria);
+					<div class="chart-item"><div><span>@categoria.Nome</span><strong>@categoria.Quantidade</strong></div><div class="bar-track" role="img" aria-label="@categoria.Nome: @categoria.Quantidade ocorrência(s)"><div class="bar @categoria.Classe" data-barra="@percentual"></div></div></div>
+				}
+				@if (Model.Categorias.All(c => c.Quantidade == 0))
+				{
+					<div class="chart-empty">Não há divergências nos filtros selecionados.</div>
+				}
+			</div>
 		</div>
-	</div>
-	<div class="tab-pane fade" id="grafico-empresas-abertas" role="tabpanel" aria-labelledby="tab-empresas-abertas" tabindex="0">
-		<div class="chart-list">
-			@foreach (var empresa in Model.EmpresasComDivergencias)
-			{
-				var percentual = empresa.Quantidade * 100 / Math.Max(1, Model.EmpresasComDivergencias.Max(x => x.Quantidade));
-				<div class="chart-item"><div><span>@empresa.Nome</span><strong>@empresa.Quantidade</strong></div><div class="bar-track"><div class="bar c2" data-barra="@percentual"></div></div></div>
-			}
-			@if (Model.EmpresasComDivergencias.Count == 0) { <div class="chart-empty">Não há divergências em aberto.</div> }
-		</div>
-	</div>
-	<div class="tab-pane fade" id="grafico-divergencias" role="tabpanel" aria-labelledby="tab-divergencias" tabindex="0">
-		<div class="chart-list">
-			@foreach (var categoria in Model.Categorias)
-			{
-				var percentual = Math.Max(8, categoria.Quantidade * 100 / Model.MaiorCategoria);
-				<div class="chart-item"><div><span>@categoria.Nome</span><strong>@categoria.Quantidade</strong></div><div class="bar-track" role="img" aria-label="@categoria.Nome: @categoria.Quantidade ocorrência(s)"><div class="bar @categoria.Classe" data-barra="@percentual"></div></div></div>
-			}
-			@if (Model.Categorias.All(c => c.Quantidade == 0)) { <div class="chart-empty">Não há divergências nos filtros selecionados.</div> }
-		</div>
-	</div>
 	</div>
 </section>
 </div>
@@ -135,44 +155,44 @@
 
 <div class="dashboard-data-grid">
 	<section class="surface" data-fullscreen-box>
-	<div class="surface-heading">
-		<div>
-			<h2>Divergências recentes</h2>
-			<p>Ocorrências em aberto que precisam de acompanhamento.</p>
+		<div class="surface-heading">
+			<div>
+				<h2 class="heading-icon heading-icon-alert">Divergências recentes</h2>
+				<p>Ocorrências em aberto que precisam de acompanhamento.</p>
+			</div>
+			<a class="link-action" asp-controller="Conciliacao" asp-action="Divergencias">Ver todas as divergências <span aria-hidden="true">→</span></a>
 		</div>
-		<a class="link-action" asp-controller="Conciliacao" asp-action="Divergencias">Ver todas as divergências <span aria-hidden="true">→</span></a>
-	</div>
-	<div class="table-responsive">
-		<table class="table data-table dashboard-company-table table-dashboard-recent align-middle mb-0">
-			<caption class="visually-hidden">Divergências recentes da competência @competencia</caption>
-			<thead><tr><th scope="col">Empresa</th><th scope="col">Documento</th><th scope="col">Divergência</th><th scope="col">Identificada em</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
-			<tbody>
-				@foreach (var divergencia in Model.PendenciasRecentes.Take(8))
-				{
-					<tr>
-						<td><a class="primary-cell" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@divergencia.EmpresaId">@divergencia.Empresa</a></td>
-						<td>@divergencia.Documento</td>
-						<td>@divergencia.Categoria</td>
-						<td>@divergencia.Identificada.ToString("dd/MM/yyyy")</td>
-						<td><span class="status-badge @(divergencia.Situacao == "Em análise" ? "status-info" : "status-warning")"><span aria-hidden="true"></span>@divergencia.Situacao</span></td>
-						<td class="text-end"><a class="icon-link" asp-controller="Conciliacao" asp-action="Divergencias" asp-route-empresaId="@divergencia.EmpresaId">Analisar <span aria-hidden="true">→</span></a></td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-	@if (Model.PendenciasRecentes.Count == 0)
-	{
-		<div class="empty-state">
-			<span class="empty-icon" aria-hidden="true">✓</span>
-			<h3>Nenhuma divergência recente</h3>
-			<p>Não há divergências em aberto nos filtros selecionados.</p>
+		<div class="table-responsive">
+			<table class="table data-table dashboard-company-table table-dashboard-recent align-middle mb-0">
+				<caption class="visually-hidden">Divergências recentes da competência @competencia</caption>
+				<thead><tr><th scope="col">Empresa</th><th scope="col">Documento</th><th scope="col">Divergência</th><th scope="col">Identificada em</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
+				<tbody>
+					@foreach (var divergencia in Model.PendenciasRecentes.Take(8))
+					{
+						<tr>
+							<td><a class="primary-cell" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@divergencia.EmpresaId">@divergencia.Empresa</a></td>
+							<td>@divergencia.Documento</td>
+							<td>@divergencia.Categoria</td>
+							<td>@divergencia.Identificada.ToString("dd/MM/yyyy")</td>
+							<td><span class="status-badge @(divergencia.Situacao == "Em análise" ? "status-info" : "status-warning")"><span aria-hidden="true"></span>@divergencia.Situacao</span></td>
+							<td class="text-end"><a class="icon-link" asp-controller="Conciliacao" asp-action="Divergencias" asp-route-empresaId="@divergencia.EmpresaId">Analisar <span aria-hidden="true">→</span></a></td>
+						</tr>
+					}
+				</tbody>
+			</table>
 		</div>
-	}
-</section>
+		@if (Model.PendenciasRecentes.Count == 0)
+		{
+			<div class="empty-state">
+				<span class="empty-icon" aria-hidden="true">✓</span>
+				<h3>Nenhuma divergência recente</h3>
+				<p>Não há divergências em aberto nos filtros selecionados.</p>
+			</div>
+		}
+	</section>
 	<section class="surface" data-fullscreen-box>
 		<div class="surface-heading">
-			<div><h2>Empresas em destaque</h2><p>Clientes com mais documentos ou pendências na competência.</p></div>
+			<div><h2 class="heading-icon heading-icon-building">Empresas em destaque</h2><p>Clientes com mais documentos ou pendências na competência.</p></div>
 			<a class="link-action" asp-controller="Empresas" asp-action="Index">Ver carteira completa <span aria-hidden="true">→</span></a>
 		</div>
 		<div class="table-responsive">
@@ -180,15 +200,16 @@
 				<caption class="visually-hidden">Empresas com mais pendências na competência @competencia</caption>
 				<thead><tr><th scope="col">Empresa</th><th scope="col">Documentos</th><th scope="col">Pendências</th><th scope="col">Situação</th><th scope="col"><span class="visually-hidden">Ação</span></th></tr></thead>
 				<tbody>
-				@foreach (var empresa in Model.Empresas.OrderByDescending(e => e.Pendencias).ThenByDescending(e => e.Documentos).Take(6))
-				{
-					<tr>
-						<td><a class="primary-cell" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id">@empresa.Nome</a></td>
-						<td>@empresa.Documentos</td><td>@empresa.Pendencias</td>
-						<td><span class="status-badge @(empresa.Situacao == "Em dia" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@empresa.Situacao</span></td>
-						<td><a class="icon-link" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id">Abrir →</a></td>
-					</tr>
-				}
+					@foreach (var empresa in Model.Empresas.OrderByDescending(e => e.Pendencias).ThenByDescending(e => e.Documentos).Take(6))
+					{
+						<tr>
+							<td><a class="primary-cell" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id">@empresa.Nome</a></td>
+							<td>@empresa.Documentos</td>
+							<td>@empresa.Pendencias</td>
+							<td><span class="status-badge @(empresa.Situacao == "Em dia" ? "status-success" : "status-warning")"><span aria-hidden="true"></span>@empresa.Situacao</span></td>
+							<td><a class="icon-link" asp-controller="Empresas" asp-action="Detalhes" asp-route-id="@empresa.Id">Abrir →</a></td>
+						</tr>
+					}
 				</tbody>
 			</table>
 		</div>
