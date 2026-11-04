@@ -1,7 +1,9 @@
-﻿using Hermenos.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Hermenos.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 namespace Hermenos.Controllers;
 
+[Authorize]
 public sealed class PainelController(IPainelService service) : Controller
 {
 	public IActionResult Index(string? situacao, int? empresaId)

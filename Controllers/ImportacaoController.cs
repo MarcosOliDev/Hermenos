@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
 using Hermenos.Services;
 using Hermenos.Services.Importacao;
 using Hermenos.Services.Interfaces;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hermenos.Controllers;
 
+[Authorize(Roles = Hermenos.Models.Perfis.Admin + "," + Hermenos.Models.Perfis.Gerente + "," + Hermenos.Models.Perfis.ContadorSenior + "," + Hermenos.Models.Perfis.ContadorPleno)]
 public sealed class ImportacoesController(IImportacaoService importacao, IConciliacaoService conciliacao,
 	ILogger<ImportacoesController> logger) : Controller
 {

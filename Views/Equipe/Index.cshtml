@@ -1,0 +1,231 @@
+@model IEnumerable<EquipeItemViewModel>
+
+@{
+	ViewData["Title"] = "Equipe";
+	ViewData["Section"] = "Equipe";
+
+	var loginGerado = TempData["LoginGerado"] as string;
+	var senhaTemporaria = TempData["SenhaTemporaria"] as string;
+
+	var credenciaisGeradas =
+		!string.IsNullOrWhiteSpace(loginGerado) &&
+		!string.IsNullOrWhiteSpace(senhaTemporaria);
+
+	var total = Model.Count();
+}
+
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">GESTÃO DE ACESSO</span>
+		<h1>Equipe</h1>
+		<p>Cadastre funcionários e controle quem pode acessar o HERMENOS.</p>
+	</div>
+	<span class="result-count" aria-live="polite">
+		<strong id="equipe-total">@total</strong>
+		<span id="equipe-total-rotulo">@(total == 1 ? "usuário encontrado" : "usuários encontrados")</span>
+	</span>
+	<a asp-action="Create" class="btn btn-primary">Cadastrar funcionário</a>
+</div>
+
+@if (TempData["Aviso"] is string aviso)
+{
+	<div class="notice notice-success" role="status">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.4 18.4-4.8-4.8L6 12.2l3.4 3.4L18 7l1.4 1.4-10 10Z" /></svg>
+		<span>@aviso</span>
+	</div>
+}
+
+@if (credenciaisGeradas)
+{
+	<section class="surface credentials-card">
+		<div class="card-head">
+			<h2>Funcionário cadastrado</h2>
+			<p>Entregue estas credenciais ao funcionário. A senha deverá ser alterada no primeiro acesso.</p>
+		</div>
+		<div class="surface-body">
+			<div class="form-grid-2">
+				<div class="filter-field">
+					<label for="credencial-usuario">Nome de usuário</label>
+					<div class="copy-field">
+						<input class="form-control" id="credencial-usuario" value="@loginGerado" readonly />
+						<button type="button" class="btn btn-outline-secondary" data-copiar="credencial-usuario">Copiar</button>
+					</div>
+				</div>
+				<div class="filter-field">
+					<label for="credencial-senha">Senha temporária</label>
+					<div class="copy-field">
+						<input class="form-control" id="credencial-senha" value="@senhaTemporaria" readonly />
+						<button type="button" class="btn btn-outline-secondary" data-copiar="credencial-senha">Copiar</button>
+					</div>
+				</div>
+			</div>
+			<div class="notice notice-warning mt-3 mb-0" role="note">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v6h-2V7Zm0 8h2v2h-2v-2Zm1-13 10 19H2L12 2Zm0 4.2L5.3 19h13.4L12 6.2Z" /></svg>
+				<span><strong>Atenção:</strong> esta senha é exibida somente agora. Copie e entregue ao funcionário com segurança.</span>
+			</div>
+		</div>
+	</section>
+}
+
+<section class="surface">
+	<div class="filter-panel filter-panel-wide" id="equipe-filtros">
+		<div class="filter-field filter-search">
+			<label for="equipe-busca">Buscar por nome, usuário ou e-mail</label>
+			<div class="input-with-icon">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.3 21.7-5.4-5.4a8 8 0 1 1 1.4-1.4l5.4 5.4-1.4 1.4ZM4 10a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z" /></svg>
+				<input class="form-control" id="equipe-busca" placeholder="Ex.: Mariana ou mariana.costa" autocomplete="off" />
+			</div>
+		</div>
+		<div class="filter-field">
+			<label for="equipe-situacao">Situação</label>
+			<select class="form-select" id="equipe-situacao">
+				<option value="">Todas as situações</option>
+				<option value="ativo">Ativos</option>
+				<option value="inativo">Desativados</option>
+			</select>
+		</div>
+		<button class="btn btn-outline-secondary" type="button" id="equipe-limpar" hidden>Limpar</button>
+	</div>
+
+	<div class="table-responsive">
+		<table class="table data-table table-equipe align-middle mb-0">
+			<caption class="visually-hidden">Usuários da equipe</caption>
+			<thead>
+				<tr>
+					<th scope="col">Usuário</th>
+					<th scope="col">Nome</th>
+					<th scope="col">E-mail</th>
+					<th scope="col">Perfil</th>
+					<th scope="col">Situação</th>
+					<th scope="col">Na equipe desde</th>
+					<th scope="col"><span class="visually-hidden">Ações</span></th>
+				</tr>
+			</thead>
+			<tbody id="equipe-linhas">
+				@foreach (var item in Model)
+				{
+					var busca = $"{item.Nome} {item.NomeUsuario} {item.Email}".ToLowerInvariant();
+					<tr class="@(item.Ativo ? "" : "item-inativo")"
+						data-busca="@busca"
+						data-situacao="@(item.Ativo ? "ativo" : "inativo")">
+						<td><span class="user-code">@item.NomeUsuario</span></td>
+						<td>
+							<div class="person-cell">
+								@if (!string.IsNullOrWhiteSpace(item.FotoPerfil))
+								{
+									<img class="person-avatar" src="@item.FotoPerfil" alt="Foto de @item.Nome" />
+								}
+								else
+								{
+									<span class="person-avatar" aria-hidden="true">@(string.IsNullOrWhiteSpace(item.Nome) ? "?" : item.Nome.Substring(0, 1).ToUpperInvariant())</span>
+								}
+								<span class="primary-cell">@item.Nome</span>
+							</div>
+						</td>
+						<td>@item.Email</td>
+						<td>@Perfis.Rotulo(item.Perfil)</td>
+						<td>
+							@if (item.Ativo)
+							{
+								<span class="status-badge status-success"><span aria-hidden="true"></span>Ativo</span>
+							}
+							else
+							{
+								<span class="status-badge status-warning"><span aria-hidden="true"></span>Desativado</span>
+							}
+						</td>
+						<td>@item.DataCadastro.ToString("dd/MM/yyyy")</td>
+						<td class="text-end">
+							@if (Perfis.PodeGerenciar(User.ObterPerfil(), item.Perfil))
+							{
+								@if (item.Ativo)
+								{
+									<form asp-action="Desativar" asp-route-id="@item.Id" method="post" class="d-inline">
+										<button type="submit" class="btn btn-sm btn-danger-soft">Desativar</button>
+									</form>
+								}
+								else
+								{
+									<form asp-action="Reativar" asp-route-id="@item.Id" method="post" class="d-inline">
+										<button type="submit" class="btn btn-sm btn-success-soft">Reativar</button>
+									</form>
+								}
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="empty-state" id="equipe-vazio" @(total == 0 ? "" : "hidden")>
+		<span class="empty-icon" aria-hidden="true">⌕</span>
+		<h3>Nenhum usuário encontrado</h3>
+		<p id="equipe-vazio-texto">@(total == 0 ? "Nenhum funcionário foi cadastrado ainda." : "Não há usuários que correspondam aos critérios informados.")</p>
+		<a class="btn btn-outline-primary btn-sm" asp-action="Create">Cadastrar funcionário</a>
+	</div>
+</section>
+
+@section Scripts {
+	<script>
+		(function () {
+				  const busca = document.getElementById('equipe-busca');
+				  const situacao = document.getElementById('equipe-situacao');
+				  const limpar = document.getElementById('equipe-limpar');
+				  const linhas = Array.from(document.querySelectorAll('#equipe-linhas tr'));
+				  const total = document.getElementById('equipe-total');
+				  const rotulo = document.getElementById('equipe-total-rotulo');
+				  const vazio = document.getElementById('equipe-vazio');
+				  const textoVazio = document.getElementById('equipe-vazio-texto');
+				  if (!busca || !situacao) return;
+
+				  function normalizar(t) {
+							return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+				  }
+
+				  function filtrar() {
+							const termo = normalizar(busca.value.trim());
+							const alvo = situacao.value;
+							let visiveis = 0;
+							linhas.forEach(function (tr) {
+									  const ok = (!termo || normalizar(tr.dataset.busca).includes(termo)) &&
+													   (!alvo || tr.dataset.situacao === alvo);
+									  tr.hidden = !ok;
+									  if (ok) visiveis++;
+							});
+							total.textContent = visiveis;
+							rotulo.textContent = visiveis === 1 ? 'usuário encontrado' : 'usuários encontrados';
+							limpar.hidden = !(termo || alvo);
+							if (linhas.length > 0) {
+									  vazio.hidden = visiveis !== 0;
+									  textoVazio.textContent = 'Não há usuários que correspondam aos critérios informados.';
+							}
+				  }
+
+				  busca.addEventListener('input', filtrar);
+				  situacao.addEventListener('change', filtrar);
+				  limpar.addEventListener('click', function () {
+							busca.value = '';
+							situacao.value = '';
+							filtrar();
+							busca.focus();
+				  });
+
+				  document.querySelectorAll('[data-copiar]').forEach(function (botao) {
+							botao.addEventListener('click', async function () {
+									  const campo = document.getElementById(botao.dataset.copiar);
+									  if (!campo) return;
+									  try {
+												await navigator.clipboard.writeText(campo.value);
+									  } catch {
+												campo.select();
+												document.execCommand('copy');
+									  }
+									  const original = botao.textContent;
+									  botao.textContent = 'Copiado';
+									  setTimeout(function () { botao.textContent = original; }, 1500);
+							});
+				  });
+		})();
+	</script>
+}

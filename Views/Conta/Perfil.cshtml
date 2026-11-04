@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Meu perfil";
+    ViewData["Section"] = "Meu perfil";
+
+    var nome = User.Identity?.Name ?? "Usuário";
+    var inicial = nome.Length > 0 ? nome.Substring(0, 1).ToUpperInvariant() : "?";
+    var foto = ViewBag.FotoPerfil as string;
+    var temFoto = !string.IsNullOrWhiteSpace(foto);
+}
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">MINHA CONTA</span>
+        <h1>Meu perfil</h1>
+        <p>Atualize sua foto e mantenha sua senha de acesso em dia.</p>
+    </div>
+</div>
+
+@if (TempData["Aviso"] is string aviso)
+{
+    <div class="notice notice-success" role="status">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.4 18.4-4.8-4.8L6 12.2l3.4 3.4L18 7l1.4 1.4-10 10Z" /></svg>
+        <span>@aviso</span>
+    </div>
+}
+@if (TempData["Erro"] is string erro)
+{
+    <div class="notice notice-danger" role="alert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v6h-2V7Zm0 8h2v2h-2v-2Zm1-13 10 19H2L12 2Zm0 4.2L5.3 19h13.4L12 6.2Z" /></svg>
+        <span>@erro</span>
+    </div>
+}
+
+<div class="account-grid">
+    <section class="surface profile-card">
+        @if (temFoto)
+        {
+            <img class="profile-photo" src="@foto" alt="Foto de @nome" />
+        }
+        else
+        {
+            <span class="profile-photo" aria-hidden="true">@inicial</span>
+        }
+        <h2 class="profile-name">@nome</h2>
+        <p class="profile-meta">@Perfis.Rotulo(User.ObterPerfil())</p>
+        <dl class="profile-details">
+            <div>
+                <dt>Nome de usuário</dt>
+                <dd><span class="user-code">@ViewBag.NomeUsuario</span></dd>
+            </div>
+        </dl>
+    </section>
+
+    <div class="account-stack">
+        <section class="surface">
+            <div class="card-head">
+                <h2>Foto de perfil</h2>
+                <p>Ela aparece no topo do sistema e na lista da equipe.</p>
+            </div>
+            <div class="surface-body">
+                <form asp-action="AtualizarFoto" method="post" enctype="multipart/form-data" class="form-stack">
+                    <div class="filter-field">
+                        <label for="foto">Escolher nova foto</label>
+                        <input type="file" name="foto" id="foto" class="form-control" accept="image/png,image/jpeg,image/webp" />
+                        <small class="field-hint">JPG, PNG ou WEBP, até 2 MB.</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Salvar foto</button>
+                    </div>
+                </form>
+
+                @if (temFoto)
+                {
+                    <form asp-action="AtualizarFoto" method="post" class="form-actions form-actions-inline">
+                        <input type="hidden" name="remover" value="true" />
+                        <button type="submit" class="btn btn-danger-soft">Remover foto atual</button>
+                    </form>
+                }
+            </div>
+        </section>
+
+        <section class="surface">
+            <div class="card-head">
+                <h2>Alterar senha</h2>
+                <p>Use pelo menos 8 caracteres.</p>
+            </div>
+            <div class="surface-body">
+                <form asp-action="AlterarSenha" method="post" class="form-stack">
+                    <div class="filter-field">
+                        <label for="SenhaAtual">Senha atual</label>
+                        <input class="form-control" type="password" id="SenhaAtual" name="SenhaAtual" autocomplete="current-password" required />
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="filter-field">
+                            <label for="NovaSenha">Nova senha</label>
+                            <input class="form-control" type="password" id="NovaSenha" name="NovaSenha" minlength="8" autocomplete="new-password" required />
+                        </div>
+                        <div class="filter-field">
+                            <label for="ConfirmarSenha">Confirmar nova senha</label>
+                            <input class="form-control" type="password" id="ConfirmarSenha" name="ConfirmarSenha" minlength="8" autocomplete="new-password" required />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Alterar senha</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>

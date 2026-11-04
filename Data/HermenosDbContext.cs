@@ -50,7 +50,12 @@ public sealed class HermenosDbContext(DbContextOptions<HermenosDbContext> option
 			entity.HasKey(x => x.IdUsuario);
 			entity.Property(x => x.Nome).HasMaxLength(200).IsRequired();
 			entity.Property(x => x.Email).HasMaxLength(254).IsRequired();
+			entity.Property(x => x.NomeUsuario).HasMaxLength(80).IsRequired();
+			entity.Property(x => x.SenhaHash).HasMaxLength(500).IsRequired();
+			entity.Property(x => x.FotoPerfil).HasMaxLength(500);
+			entity.Property(e => e.Perfil).HasMaxLength(20).IsUnicode(false);
 			entity.HasIndex(x => x.Email).IsUnique();
+			entity.HasIndex(x => x.NomeUsuario).IsUnique();
 		});
 
 		modelBuilder.Entity<Contrato>(entity =>

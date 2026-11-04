@@ -1,4 +1,5 @@
-﻿using Hermenos.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Hermenos.Data;
 using Hermenos.Enums;
 using Hermenos.Models;
 using Hermenos.Services.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hermenos.Controllers;
 
+[Authorize(Roles = Hermenos.Models.Perfis.Admin + "," + Hermenos.Models.Perfis.Gerente + "," + Hermenos.Models.Perfis.ContadorSenior + "," + Hermenos.Models.Perfis.ContadorPleno)]
 public sealed class EmpresasController(
 	IEmpresaService service,
 	HermenosDbContext db,
@@ -29,6 +31,7 @@ public sealed class EmpresasController(
 		return modelo is null ? NotFound() : View(modelo);
 	}
 
+	[Authorize(Roles = Hermenos.Models.Perfis.Admin + "," + Hermenos.Models.Perfis.Gerente + "," + Hermenos.Models.Perfis.ContadorSenior)]
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Cadastrar(
@@ -56,7 +59,6 @@ public sealed class EmpresasController(
 			});
 		}
 
-		// Verifica duplicidade mesmo que o CNPJ esteja formatado de outra maneira.
 		var cnpjsExistentes = await db.Empresas
 			.AsNoTracking()
 			.Select(e => e.Cnpj)
@@ -89,7 +91,6 @@ public sealed class EmpresasController(
 		}
 		catch (DbUpdateException ex)
 		{
-			// O índice único do banco protege contra cadastros simultâneos.
 			logger.LogWarning(ex, "Não foi possível cadastrar a empresa por conflito no banco.");
 
 			return Conflict(new

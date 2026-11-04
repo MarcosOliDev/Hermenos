@@ -1,9 +1,11 @@
-﻿using Hermenos.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Hermenos.Services.Interfaces;
 using Hermenos.ViewModels.Divergencia;
 using Hermenos.ViewModels.Painel;
 using Microsoft.AspNetCore.Mvc;
 namespace Hermenos.Controllers;
 
+[Authorize]
 public sealed class ConciliacaoController(IConciliacaoService service) : Controller
 {
 	public IActionResult Index(
@@ -49,6 +51,7 @@ public sealed class ConciliacaoController(IConciliacaoService service) : Control
 		empresaId, situacao, categoria, busca));
 	}
 
+	[Authorize(Roles = Hermenos.Models.Perfis.Admin + "," + Hermenos.Models.Perfis.Gerente + "," + Hermenos.Models.Perfis.ContadorSenior + "," + Hermenos.Models.Perfis.ContadorPleno)]
 	public IActionResult Importacoes(int? empresaId)
 	{
 		if (!ValidarEmpresa(empresaId))
