@@ -6,10 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hermenos.Services.Importacao;
 
-/// <summary>
-/// Cruza os documentos fiscais (XML) com os registros do ERP de uma empresa e mantém as divergências.
-/// Pode ser executado várias vezes: divergências já tratadas pelo usuário não são apagadas.
-/// </summary>
 public sealed class MotorConciliacao(HermenosDbContext db, ILogger<MotorConciliacao> logger)
 {
 	public const string CategoriaAusente = "Documento ausente em uma das fontes";
@@ -28,7 +24,6 @@ public sealed class MotorConciliacao(HermenosDbContext db, ILogger<MotorConcilia
 		var formatos = await db.LotesImportacao
 			.Where(l => l.IdEmpresa == empresaId && l.Status != StatusLoteImportacao.FalhaNoProcessamento)
 			.Select(l => l.Formato).ToListAsync(ct);
-		// Só acusa "ausente" quando a outra fonte já foi enviada; antes disso o documento apenas aguarda.
 		var temXml = formatos.Contains("XML");
 		var temErp = formatos.Any(f => f != "XML");
 
@@ -97,7 +92,6 @@ public sealed class MotorConciliacao(HermenosDbContext db, ILogger<MotorConcilia
 		return achados;
 	}
 
-	/// <summary>Cancelado é a marca vinda do XML e permanece; os demais estados refletem o resultado da conciliação.</summary>
 	private static void AtualizarStatus(DocumentoFiscal documento, List<Achado> achados, bool avaliavel)
 	{
 		if (documento.Status == StatusDocumento.Cancelado) return;
@@ -131,7 +125,6 @@ public sealed class MotorConciliacao(HermenosDbContext db, ILogger<MotorConcilia
 			atual.ValorFonteERP = achado.ValorErp;
 		}
 
-		// Divergência que deixou de existir: some se ninguém começou a tratar; caso contrário permanece no histórico.
 		foreach (var obsoleta in existentes.Where(d => achados.All(a => a.Categoria != d.Categoria)
 			&& d.Status == StatusDivergencia.Pendente))
 			db.Divergencias.Remove(obsoleta);

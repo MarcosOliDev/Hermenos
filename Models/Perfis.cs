@@ -34,7 +34,9 @@
 		public static bool EhGestao(string? perfil) => perfil is Admin or Gerente;
 
 		public static bool PodeGerenciar(string? ator, string? alvo) =>
-			EhGestao(ator) && Nivel(ator) < Nivel(alvo);
+			EhGestao(ator) &&
+			EhEquipe(alvo) &&
+			Nivel(ator) < Nivel(alvo);
 
 		public static string[] PerfisQuePodeCadastrar(string? ator) => ator switch
 		{
