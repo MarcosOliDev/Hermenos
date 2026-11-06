@@ -36,12 +36,34 @@ builder.Services.AddScoped<GeradorSenhaTemporaria>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//	using var escopo = app.Services.CreateScope();
+//	var banco = escopo.ServiceProvider.GetRequiredService<HermenosDbContext>();
+//	await banco.Database.MigrateAsync();
+//	await SemeadorInicial.SemearAsync(banco);
+//}
+
+using (var escopo = app.Services.CreateScope())
 {
-	using var escopo = app.Services.CreateScope();
-	var banco = escopo.ServiceProvider.GetRequiredService<HermenosDbContext>();
+	var servicos = escopo.ServiceProvider;
+	var banco = servicos.GetRequiredService<HermenosDbContext>();
+
 	await banco.Database.MigrateAsync();
-	await SemeadorInicial.SemearAsync(banco);
+
+	if (app.Environment.IsDevelopment())
+	{
+		await SemeadorInicial.SemearAsync(banco);
+	}
+	else if (app.Environment.IsProduction())
+	{
+		var configuracao = servicos.GetRequiredService<IConfiguration>();
+
+		await SemeadorInicial.SemearAdminInicialAsync(
+			banco,
+			configuracao
+		);
+	}
 }
 
 if (!app.Environment.IsDevelopment())

@@ -2,11 +2,64 @@
 using Hermenos.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Hermenos.Data;
 
 public static class SemeadorInicial
 {
+	public static async Task SemearAdminInicialAsync(
+		HermenosDbContext db,
+		IConfiguration configuration)
+	{
+		// Não recria nem redefine um administrador existente.
+		if (await db.Usuarios.AnyAsync(u => u.Perfil == Perfis.Admin))
+			return;
+
+		var nome = configuration["AdminInicial:Nome"];
+		var email = configuration["AdminInicial:Email"];
+		var nomeUsuario = configuration["AdminInicial:NomeUsuario"];
+		var senha = configuration["AdminInicial:Senha"];
+
+		if (string.IsNullOrWhiteSpace(nome) ||
+			string.IsNullOrWhiteSpace(email) ||
+			string.IsNullOrWhiteSpace(nomeUsuario) ||
+			string.IsNullOrWhiteSpace(senha))
+		{
+			throw new InvalidOperationException(
+				"Configure as variáveis de ambiente do administrador inicial.");
+		}
+
+		if (senha.Length < 8)
+			throw new InvalidOperationException(
+				"A senha do administrador inicial deve ter pelo menos 8 caracteres.");
+
+		var admin = new Usuario
+		{
+			Nome = nome.Trim(),
+			Email = email.Trim().ToLowerInvariant(),
+			NomeUsuario = nomeUsuario.Trim().ToLowerInvariant(),
+			Perfil = Perfis.Admin,
+			Ativo = true,
+			DeveAlterarSenha = true,
+			DataCadastro = DateTime.UtcNow,
+			CriadoEm = DateTimeOffset.UtcNow
+		};
+
+		if (await db.Usuarios.AnyAsync(u =>
+			u.Email == admin.Email ||
+			u.NomeUsuario == admin.NomeUsuario))
+		{
+			throw new InvalidOperationException(
+				"O e-mail ou nome de usuário do administrador inicial já está em uso.");
+		}
+
+		admin.SenhaHash = new PasswordHasher<Usuario>()
+			.HashPassword(admin, senha);
+
+		db.Usuarios.Add(admin);
+		await db.SaveChangesAsync();
+	}
 	public static async Task SemearAsync(HermenosDbContext db)
 	{
 		var agora = DateTimeOffset.UtcNow;
